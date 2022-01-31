@@ -1,0 +1,121 @@
+<!-- Modal --><!-- 这是老师查看具体某个课程中学生完成作业的总次数的一个统计信息的Modal -->
+	<div class="modal fade" id="statisticOfHomework" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" style="width: 1000px;">
+	    <div class="modal-content">
+	      <div class="modal-header" style="position: relative;">
+	        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<h4 class="modal-title">作业统计</h4>
+			<div style="height: 25px; position:absolute; right: 270px; top: 25px;">查重率:</div>
+			<input type="text" name="chachong_rate" id="chachong_rate" value="80" style="height: 25px; width: 35px; text-align: center; position:absolute; right: 229px; top: 21px;">
+			<div style="height: 25px; position:absolute; right: 212px; top: 25px;">%</div>
+			<input type="submit" name="sub" id="sub" value="查看" style="position:absolute; right: 150px; top: 21px; height: 25px;">
+	      </div>
+	      <div class="modal-body">
+	      	<p class="bg-warning text-danger" style='padding:5px 10px;display:none;'></p>
+	      	<div class='table-responsive'>
+		      	<table class='table table-striped table-condensed '>
+		      		<thead id='table_head'>  <!-- thead标签用来定义表格的表头，要跟tbody在一起使用 -->
+		      			<tr>
+		      				<th>姓名</th>
+		      				<th>学号</th>
+							<th>提交作业次数/作业总数</th>
+							<th>重复次数/提交作业总数</th>
+		      				<th>编译成功次数</th>
+		      				<th>结果正确次数</th>
+		      				<th>平均成绩</th>
+		      			</tr>
+		      		</thead>
+					<tbody id='statisticList'>
+	    			</tbody>
+				</table>
+			</div>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+<script type="text/javascript">
+
+
+$('#sub').on("click", function(){
+	var modalName = '#statisticOfHomework ';	
+	var lessionID = {$lessionID};
+	var chachong_rate = $(modalName+'#chachong_rate').val();
+	
+	console.log("查重率：" + chachong_rate);
+	$(modalName+"#statisticList").empty();
+
+	$.ajax({
+		type:'POST',
+		url:'__URL__/index/teacher/ajax_getHomeworkStatisticList',
+		data:{'lessionID':lessionID, 'chachong_rate':chachong_rate},
+		success:function(data){
+			if(data['code'] === 0){
+				data = data['data'];
+				for(var v in data){
+					var str = '<td>' + data[v]['name'] + '</td>';
+					str = str + '<td>' + data[v]['studentID'] + '</td>';
+					str = str + '<td>' + data[v]['submitNum'] + '/' + data[v]['homeworkNum'] + '</td>';
+					str = str + '<td>' + data[v]['copyNum'] + '/' + data[v]['submitNum'] + '</td>';
+					str = str + '<td>' + data[v]['bianyi_correct'] + '</td>';
+					str = str + '<td>' + data[v]['run_correct'] + '</td>';
+					str = str + '<td>' + data[v]['avescore'] + '</td>';
+					str = '<tr>' + str + '</tr>';
+					$(modalName+"#statisticList").append(str);
+				}
+			}else{
+				$(modalName+'.text-danger').show();
+				$(modalName+'.text-danger').html(data['errmsg']);
+			}
+		}
+	});
+});
+
+$(document).ready(function(){
+	var modalName = '#statisticOfHomework ';
+	
+	var lessionID = {$lessionID};
+	var chachong_rate = document.getElementById("chachong_rate").value;
+	// var chachong_rate = $("#chachong_rate").val();
+	// console.log("查重率：" + chachong_rate);
+
+	function init(){
+		$(modalName+'.text-danger').hide();  //html中的连接操作用'.',php中的连接操作用'+'
+		$(modalName+"#statisticList").empty();
+	}
+
+	
+
+	$(modalName).on('show.bs.modal', function (e) {
+		init();
+		
+		$.ajax({
+			type:'POST',
+			url:'__URL__/index/teacher/ajax_getHomeworkStatisticList',
+			data:{'lessionID':lessionID,
+				  'chachong_rate':chachong_rate},
+			success:function(data){
+				if(data['code'] === 0){
+					data = data['data'];
+					for(var v in data){
+						var str = '<td>' + data[v]['name'] + '</td>';
+						str = str + '<td>' + data[v]['studentID'] + '</td>';
+						str = str + '<td>' + data[v]['submitNum'] + '/' + data[v]['homeworkNum'] + '</td>';
+						str = str + '<td>' + data[v]['copyNum'] + '/' + data[v]['submitNum'] + '</td>';
+						str = str + '<td>' + data[v]['bianyi_correct'] + '</td>';
+						str = str + '<td>' + data[v]['run_correct'] + '</td>';
+						str = str + '<td>' + data[v]['avescore'] + '</td>';
+						str = '<tr>' + str + '</tr>';
+						$(modalName+"#statisticList").append(str);
+					}
+				}else{
+					$(modalName+'.text-danger').show();
+					$(modalName+'.text-danger').html(data['errmsg']);
+				}
+			}
+		});
+	});
+});
+
+
+</script>

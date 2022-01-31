@@ -1,0 +1,61 @@
+{layout name="layout" /}
+<div class='container-fluid'>
+	<nav class="navbar navbar-default twolevel-navbar visible-xs">
+		 <div class="navbar-header"><!--这会让navbar里面的文本看起来更大一号--> 
+			<span class="navbar-brand" style='white-space:nowrap;'><a href='javascript:history.go(-1);'><i class='fa fa-chevron-left'></i></a>我的回答</span>
+		</div>
+	</nav>
+	<div class='row hidden-xs'>
+		<h1 class='page-header' id="showcoursename">我的回答</h1>
+	</div>
+	<div class='row'>
+		<div class='col-md-12'>
+			<div class='panel panel-default BBS'>
+				<div class='panel-heading'>
+					<i class='fa fa-cubes fa-fw'></i>&nbsp;&nbsp;回复列表
+				</div>
+ 				<div class='panel-body'>
+					<table class='list-group answer'>
+					</table>
+				</div> 
+			</div>
+		</div>
+	</div>
+
+</div>
+<script type="text/javascript">
+function getAnswerList(){
+	$.ajax({
+		type:'POST',
+		url:'__URL__/index/Bbs/ajax_getAnswerListByuserID',
+		data:{},
+		success:function(data){
+			data = data['data'];
+			$('.answer').empty();
+			for(var v in data){
+				var str = "<div class='bbs-header' id='bbs-header' style='padding-top:10px; padding-bottom:10px; font-size:16px'><i class='fa fa-user fa-fw'></i>" + data[v]['name'] + "<span class='pull-right' style='background-color:yellow'>"+data[v]['createtime']+"</span></div>";
+/* 				if(data[v]['appointID'] != null){
+					 var a = data[v]['appointID'];
+					 for(var k in data){
+						 if(data[k]['id'] == a)
+							 {
+							 str = str + "<div style ='padding:20px; background-color:#F5FFFA; font-size:13px;' class='' >"
+						 	 str = str + "<div class='bbs-header' id='bbs-header'><i class='fa fa-external-link fa-fw'></i>" + data[k]['name'] + "</div>";
+						 	 str = str + "<div class='bbs-content'  id='bbs-content' style='font-size:13px'>" + data[k]['content'] + "</div>";
+							 str = str + "</div>";
+							 }
+					 }
+				}   */
+				str = str + "<div class='bbs-content' id='bbs-content' style='padding-top:10px;padding-bottom:10px'>" + data[v]['content'] + "</div>";
+				str =  "<div class='panel panel-primary'>"+str +"</div>";
+				//str = str +"<div><button type='button' class='btn btn-success pull-right answerForReanswer' attr="+data[v]['id']+">回复</button></div>";
+				str = "<div class='clearfix'>" + str + "</div>";
+				$('.answer').append(str);
+			}
+			//addClickListenForAnswerForReanswer();
+			$('.bbs-content img').attr('style','max-width:100%; max-height:500px');   //注意引用img标签和引用class的不同！
+		}
+	})
+}
+getAnswerList();
+</script>

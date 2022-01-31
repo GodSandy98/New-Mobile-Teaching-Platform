@@ -1,0 +1,91 @@
+{layout name="layout" /}
+<div class='container-fluid'>
+	<nav class="navbar navbar-default twolevel-navbar visible-xs">
+		 <div class="navbar-header"><!--这会让navbar里面的文本看起来更大一号--> 
+			<span class="navbar-brand" style='white-space:nowrap;'><a href='__URL__'><i class='fa fa-chevron-left'></i></a>{$lessionInfo['lessionName']}({$lessionID})</span>
+		</div>
+	</nav>
+	<div class='row hidden-xs'>
+		<h1 class='page-header' id="showcoursename">{$lessionInfo['lessionName']}({$lessionID})</h1>
+	</div>
+	<div class='row'>
+		<div class='col-md-12'>
+			<div class='panel panel-default BBS'>
+				<div class='panel-heading'>
+					<i class='fa fa-cubes fa-fw'></i>&nbsp;&nbsp;留言板
+				</div>
+				<BR>
+				<div align='center'>
+				<input class="form-control" id="textId" placeholder="请输入标题" style="width:95%" >
+				</div>
+				<BR>
+				<div align='center'>
+					<form  method="post">
+						<script id="container" name="content" type="text/plain" style='padding:0 20px;'>
+    	  				</script>
+    	  			</form>
+    	  		</div>
+    	  		<BR>  
+				<div align="center">  
+				<button class="btn btn-primary" type="button" id='submitBbsContent' >提交</button>    
+				</div>  
+				<BR> 
+				
+				<script type='text/javascript'>
+				    var ue = UE.getEditor('container',{
+				    	toolbars: [
+				    	  [  'bold', 'italic', 'underline', 'fontborder',  'superscript', 'subscript', '|', 'forecolor',  '|',              
+				            'simpleupload',  
+				            ]
+				    	],
+						initialFrameWidth:800,
+						saveInterval:2000,
+						initialFrameHeight:260
+					});
+				 
+					ue.ready(function(){
+						$('#edui1').css('width','100%');
+						$('#edui1_iframeholder').css('width','100%');
+						$('#submitBbsContent').click(function(){
+							var title=$('#textId').val()
+							var question = ue.getContent();
+							if(!title){
+								alert('请输入标题！');
+								return false;
+							}
+							if(!question){
+								alert('问题不能为空！');
+								return false;
+							}
+							$.ajax({
+					    	type: 'POST',
+					    	url:'__URL__/index/Bbs/ajax_get_bbsquestion_input?lessionID={$lessionID}',
+					     	timeout: 10000,
+					     	async: true,
+					     	data: {
+					        	 'content1': title,
+								 'content2': question,
+					    	 },
+					    	 success:function(data){
+					     		if(data['code']==0){
+					     			alert(data['data']);
+					     			location.assign("__URL__/index/Bbs/bbs_q?lessionID={$lessionID}");
+					     		}
+					     		else{
+					     			console.log(data);
+					     		}
+					     	}
+						});
+					});
+				});
+				
+				/* setTimeout(function(){
+					var html = ue.getContent();
+				    alert(html);
+				},10000); */
+				
+				</script>
+			</div>
+		</div>
+	</div>
+</div>

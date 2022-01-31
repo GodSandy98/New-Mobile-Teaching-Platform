@@ -1,0 +1,66 @@
+<!-- Modal --><!-- 这是老师查看具体某个课程中学生发表问题和回复问题的总次数的一个统计信息的Modal -->
+	<div class="modal fade" id="statisticOfMessageBoard" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	        <h4 class="modal-title">课程论坛信息统计</h4>
+	      </div>
+	      <div class="modal-body">
+	      	<p class="bg-warning text-danger" style='padding:5px 10px;display:none;'></p>
+	      	<div class='table-responsive'>
+		      	<table class='table table-striped table-condensed '>
+		      		<thead id='table_head'>
+		      			<tr>
+		      				<th>姓名</th>
+		      				<th>学号</th>
+		      				<th>发表问题次数</th>
+		      				<th>回复问题次数</th>
+		      			</tr>
+		      		</thead>
+					<tbody id='statisticList'>
+	    			</tbody>
+				</table>
+			</div>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+<script type="text/javascript">
+$(document).ready(function(){
+	var modalName = '#statisticOfMessageBoard ';
+	var lessionID = {$lessionID};
+	
+	function init(){
+		$(modalName+'.text-danger').hide();
+		$(modalName+"#statisticList").empty();
+	}
+	
+	$(modalName).on('show.bs.modal', function (e) {   //设定Modal在打开的过程中要做的事情
+		init();
+		
+		$.ajax({
+			type:'POST',
+			url:'__URL__/index/teacher/ajax_getMessageBoardStatisticList',
+			data:{'lessionID':lessionID},
+			success:function(data){
+				if(data['code'] === 0){
+					data = data['data'];
+					for(var v in data){
+						var str = '<td>' + data[v]['name'] + '</td>';
+						str = str + '<td>' + data[v]['studentID'] + '</td>';
+						str = str + '<td>' + data[v]['questionnumber'] + '</td>';
+						str = str + '<td>' + data[v]['answertimes'] + '</td>';
+						str = '<tr>' + str + '</tr>';
+						$(modalName+"#statisticList").append(str);
+					}
+				}else{
+					$(modalName+'.text-danger').show();
+					$(modalName+'.text-danger').html(data['errmsg']);
+				}
+			}
+		});
+	});
+});
+</script>

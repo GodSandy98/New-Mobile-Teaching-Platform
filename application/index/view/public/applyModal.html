@@ -1,0 +1,47 @@
+	<!-- Modal这是bootstrap封装好的模态框格式 -->
+		<div class="modal fade" id="addLession" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		        <h4 class="modal-title" id="myModalLabel">申请课程</h4>
+		      </div>
+		      <div class="modal-body">
+		        <div class='form-group'>
+		        	<label class="sr-only" for="exampleInputEmail2">请输入课程号</label>
+    				<input type="text" class="form-control" id="lessionID" placeholder="请输入课程号"  data-placement="top" data-toggle="popover" data-content="课程号不能为空"> 
+		        </div>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-primary" id='addLessionButton'>申请</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
+	<script type='text/javascript'>
+	$(document).ready(function(){
+		$('#addLessionButton').click(function(){
+			if(!$('#lessionID').val()){
+				$('#lessionID').popover('show');    /* 在这里判断什么时候要popover课程名称不能为空这条信息 */
+				setTimeout(function(){$('#lessionID').popover('destroy');},3000);
+				return false;
+			} 
+			var data = {};
+			data['lessionID'] = $('#lessionID').val();
+			$.ajax({
+				type:'POST',
+				url:'__URL__/index/Lession/ajax_addLession',
+				data:data,
+				success:function(data){
+					if(data['code'] === 0){
+						$('#addLession').modal('hide');
+						alert(data['data']);
+					}else{
+						alert(data.errmsg);
+					}
+				}
+			});
+		});
+	});
+	</script>

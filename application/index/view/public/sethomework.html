@@ -1,0 +1,284 @@
+
+	<!-- Modal -->
+		<div class="modal fade" id="sethomework" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		        <h4 class="modal-title">布置作业</h4>
+		      </div>
+		      <div class="modal-body">
+		      	<p class="bg-warning text-danger" style='padding:5px 10px;display:none;'></p>
+		      	<form class='form'>
+		      		<div class="form-group">
+		      			<input id='homeworkTitle' class='form-control' placeholder='请输入作业标题（不超过30字）' data-placement="top" data-toggle="popover" data-content="作业标题不能为空"/>
+		      		</div>
+		      		<div class="form-group">
+		      			<textarea id='homeworkContent' class="form-control" rows="3" placeholder='请输入作业描述'></textarea>
+		      		</div>
+		      		<div class="form-inline row" style="margin-bottom: 15px;">
+			      		<div class="form-group col-md-6">
+			      			<input id='homeworkTestCase' class="form-control" placeholder='请输入测试用例'
+			      			data-placement="top" data-toggle="popover" data-content="测试用例不能为空"/>
+			      		</div>
+			      		<div class="form-group col-md-6">
+			      			<input id='homeworkCorrectResult' class="form-control " placeholder='请输入正确结果' 
+			      			data-placement="top" data-toggle="popover" data-content="正确结果不能为空"/>
+			      		</div>
+			      	</div>
+		      		<div class="form-inline row" style="margin-bottom: 15px;">
+			      		<div class="form-group col-md-6">
+			      			<input id='homeworkTestCase1' class="form-control" placeholder='请输入测试用例1'
+							data-placement="top" data-toggle="popover" data-content="测试用例1不能为空"/>
+			      		</div>
+			      		<div class="form-group col-md-6">
+			      			<input id='homeworkCorrectResult1' class="form-control" placeholder='请输入正确结果1'
+			      			 data-placement="top" data-toggle="popover" data-content="正确结果1不能为空" />
+			      		</div>
+			      	</div>
+		      		<div class='row'>
+			      		<div class='col-md-5'>
+				      		<div class="form-group">
+				      			<label for="start_time">开始时间</label>
+					      		<div class="input-group date" id="start_time" data-date="" data-date-format="yyyy-mm-dd hh:ii:ss" data-placement="top" data-toggle="popover" data-content="开始时间不能为空">
+								    <input class='form-control' size="16" type="text" readonly>
+								    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+								</div>
+							</div>
+						</div>
+						<div class='col-md-1'></div>
+						<div class='col-md-5'>
+				      		<div class="form-group">
+				      			<label for="end_time">结束时间</label>
+					      		<div class="input-group date" id="end_time" data-date="" data-date-format="yyyy-mm-dd hh:ii:ss" data-placement="top" data-toggle="popover" data-content="结束时间不能为空">
+								    <input class='form-control' size="16" type="text" readonly>
+								    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+								</div>
+							</div>
+						</div>
+		      		</div>
+		      		<div class="form-group">
+		      			<div class="progress" id="upload_progress" style='display:none;'>
+						  <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+						    <span>0%</span>
+						  </div>
+						</div>
+						<div id='upload_info' style='margin-bottom:10px;text-align:center;'></div>
+						<input type="file" id='upload_file' name="file" data-placement="top" data-toggle="popover" data-content="请选择文件"/>
+		      		</div>
+				</form> 
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-primary" id='homeworkSubmit'>提交</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+<script type='text/javascript'>
+		$(document).ready(function(){
+			var modelName = '#sethomework ';
+			
+			function init(){
+				var date = getFormatDate(new Date());
+				$(modelName+"#start_time input").val(date);
+				$(modelName+"#start_time").datetimepicker('setStartDate', date);
+				$(modelName+"#end_time").datetimepicker('setStartDate', date);
+				$(modelName+'#homeworkTitle').val('');
+				$(modelName+'#homeworkContent').val('');
+				//$(modelName+'#homeworkTestCase').val('');
+				//$(modelName+'#homeworkCorrectResult').val('');
+				$(modelName+'#upload_file').val('');
+				$(modelName+"#end_time input").val('');
+				$(modelName+'.text-danger').hide();
+			}
+			
+			$(modelName).on('shown.bs.modal', function (e) {
+				  init();
+				});
+			
+			function upload_progress_show(val){
+				$(modelName+'#upload_progress .progress-bar').css('width',val+'%');
+				$(modelName+'#upload_progress .progress-bar').attr('aria-valuenow',val);
+				$(modelName+'#upload_progress span').html(val+'%');
+			}
+
+			function uploadOneShard(data,file,size,shardSize,shardCount,i,num){
+				if(num > 3) return false; //最多重传三次
+				//计算每一片的起始与结束位置
+	            var start = i * shardSize,
+	                end = Math.min(size, start + shardSize);
+				//构造一个表单，FormData是HTML5新增的
+	            var form = new FormData();
+	            form.append("file", file.slice(start, end));  //slice方法用于切出文件的一部分
+	            for(var k in data){
+	            	form.append(k,data[k]);
+	            }
+	            form.append("index", i + 1);
+				
+				$.ajax({
+	                url: "__URL__/index/Teacher/ajax_setHomework_withfile",
+	                type: "POST",
+	                data: form,
+	                processData: false,  //很重要，告诉jquery不要对form进行处理
+	                contentType: false,  //很重要，指定为false才能形成正确的Content-Type
+	                success: function (data) {
+	               		if(data['code'] === 0){
+	               			upload_progress_show((data['data']/shardCount*100).toFixed(2));
+	               			if(data['data'] == shardCount){
+	               				$(modelName+'#upload_progress').hide();
+	               				$(modelName+'#upload_file').removeAttr('disabled','disabled');
+								$(modelName+'#upload_file').val('');
+								upload_progress_show(0);
+								$(modelName+'#upload_file').removeAttr('disabled');
+								$(modelName+'#homeworkSubmit').removeAttr('disabled','disabled');
+								setTimeout(function(){
+									alert('布置作业成功！');
+									$(modelName).modal('hide');
+								},200);
+	               			}
+	               		}else{
+	               			console.log(data['errmsg']);
+	               		}
+	                }
+	            });
+			}
+			
+			function uploadFile(file,data){
+				new hashMe(file, function OutputHash(msg) {
+					var name = file.name;
+					var size = file.size;
+					var shardSize = 2*1024*1024;
+					var shardCount = Math.ceil(size/shardSize);
+					var md5 = msg;
+					
+					data['md5'] = md5;
+					data['total'] = shardCount;
+					data['filename'] = name;
+					
+					$.ajax({
+						type:'POST',
+						url:'__URL__/index/Teacher/ajax_checkFile_homework',
+						data:data,
+						success:function(returndata){
+							if(returndata['code'] === 0){
+								$(modelName+'#upload_progress').show();
+								$(modelName+'#upload_file').attr('disabled','disabled');
+								$(modelName+'#homeworkSubmit').attr('disabled','disabled');
+								upload_progress_show((returndata['data']/shardCount*100).toFixed(2));
+								for(i = returndata['data']; i < shardCount; ++i){
+									uploadOneShard(data,file,size,shardSize,shardCount,i,0)
+								}
+							}else if(returndata['code'] === 1){
+								alert(returndata['data']);
+								$(modelName).modal('hide');
+		               		}else{
+		               			$(modelName+'.text-danger').show();
+		               			$(modelName+'.text-danger').html(returndata['errmsg']);
+		               		}
+						}
+					});
+				});
+			}
+			
+			function checkstrlength(s){
+				var n = 0;
+				for(var i=0;i<s.length;i++) { 
+					//charCodeAt()可以返回指定位置的unicode编码,这个返回值是0-65535之间的整数 
+					if(s.charCodeAt(i)<128) { 
+						n++; 
+					}else{ 
+						n+=3; 
+					} 
+				} 
+				return n;
+			}
+			
+			$(modelName+'#homeworkSubmit').click(function(){
+				$(modelName+'.text-danger').hide();
+				var data = {};
+				if(!$(modelName+'#homeworkTitle').val()){
+					$(modelName+'#homeworkTitle').popover('show');
+					setTimeout(function(){$(modelName+'#homeworkTitle').popover('destroy');},3000);
+					return false;
+				}
+				data['title'] = $(modelName+'#homeworkTitle').val();
+				if(!$(modelName+'#start_time input').val()){
+					$(modelName+'#start_time').popover('show');
+					setTimeout(function(){$(modelName+'#start_time').popover('destroy');},3000);
+					return false;
+				}
+				data['starttime'] = $(modelName+'#start_time input').val();
+				if(!$(modelName+'#end_time input').val()){
+					$(modelName+'#end_time').popover('show');
+					setTimeout(function(){$(modelName+'#end_time').popover('destroy');},3000);
+					return false;
+				}
+				data['endtime'] = $(modelName+'#end_time input').val();
+				if(data['endtime'] < data['starttime']){
+					$(modelName+'.text-danger').show();
+					$(modelName+'.text-danger').html('结束时间早于开始时间');
+					return;
+				}
+				if(checkstrlength(data['title']) > 90){
+					$(modelName+'.text-danger').show();
+					$(modelName+'.text-danger').html('标题超出规定长度');
+					return;
+				}
+				if($(modelName+'#homeworkContent').val()){
+					data['content'] = $(modelName+'#homeworkContent').val();
+				}
+				data['lessionID'] = {$lessionID};
+				
+				if(!$(modelName+ '#homeworkTestCase').val()) {
+					$(modelName+'#homeworkTestCase').popover('show');
+					setTimeout(function(){$(modelName+'#homeworkTestCase').popover('destroy');},3000);
+					return false;
+				};
+				data['test_case'] = $(modelName+'#homeworkTestCase').val();
+
+				if(!$(modelName+ '#homeworkCorrectResult').val()) {
+					$(modelName+'#homeworkCorrectResult').popover('show');
+					setTimeout(function(){$(modelName+'#homeworkCorrectResult').popover('destroy');},3000);
+					return false;
+				};
+				data['correct_result'] = $(modelName+'#homeworkCorrectResult').val();
+
+				if(!$(modelName+ '#homeworkTestCase1').val()) {
+					$(modelName+'#homeworkTestCase1').popover('show');
+					setTimeout(function(){$(modelName+'#homeworkTestCase1').popover('destroy');},3000);
+					return false;
+				};
+				data['test_case1'] = $(modelName+'#homeworkTestCase1').val();
+
+				if(!$(modelName+ '#homeworkCorrectResult1').val()) {
+					$(modelName+'#homeworkCorrectResult1').popover('show');
+					setTimeout(function(){$(modelName+'#homeworkCorrectResult1').popover('destroy');},3000);
+					return false;
+				};
+				data['correct_result1'] = $(modelName+'#homeworkCorrectResult1').val();
+
+					console.log(data);
+				if(!$(modelName+'#upload_file').val()){
+					$.ajax({
+						type:'POST',
+						url:'__URL__/index/teacher/ajax_setHomework_withoutfile',
+						data:data,
+						success:function(data){
+							if(data['code'] === 0){
+								alert(data['data']);
+								$(modelName).modal('hide');
+							}else{
+								$(modelName+'.text-danger').show();
+								$(modelName+'.text-danger').html(data['errmsg']);
+								return;
+							}
+						}
+					});
+				}else{
+					var file = $(modelName+"#upload_file")[0].files[0];
+					uploadFile(file,data);
+				}
+			});
+		});
+</script>

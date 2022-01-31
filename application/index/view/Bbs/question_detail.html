@@ -1,0 +1,272 @@
+{layout name="layout" /}
+<div class='container-fluid'>
+	<nav class="navbar navbar-default twolevel-navbar visible-xs">
+		 <div class="navbar-header"><!--这会让navbar里面的文本看起来更大一号--> 
+			<span class="navbar-brand" style='white-space:nowrap;'><a href='javascript:history.go(-1);'><i class='fa fa-chevron-left'></i></a>{$lessionInfo['lessionName']}({$lessionID})</span>
+		</div>
+	</nav>
+	<div class='row hidden-xs'>
+		<h1 class='page-header' id="showcoursename">{$lessionInfo['lessionName']}({$lessionID})</h1>
+	</div>
+
+	<div class='row'>
+		<div class='col-md-12'>
+			<div class='panel panel-default BBSnew'>
+				<div class='panel-heading'>
+					<i class='fa fa-cubes fa-fw'></i>&nbsp;&nbsp;问题列表
+				</div>
+ 				<div class='panel-body'>
+					<table class='list-group question'>
+					</table>
+				</div> 
+			</div>
+		</div>
+	</div>
+	<div class='row'>
+		<div class='col-md-12'>
+			<div class='panel panel-default BBS'>
+				<div class='panel-heading'>
+					<i class='fa fa-cubes fa-fw'></i>&nbsp;&nbsp;回复列表
+				</div>
+ 				<div class='panel-body'>
+					<table class='list-group answer'>
+					</table>
+				</div> 
+			</div>
+		</div>
+	</div>
+	<!-- Modal -->
+		<div class="modal fade" id="answerQuestion" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		        <h4 class="modal-title" id="addUserLabel">回复</h4>
+		      </div>
+		      <div class="modal-body">
+		        <div class='form-group'>
+		        <div align='center'>
+					<form  method="post">
+						<script id="container" name="content" type="text/plain" style='padding:0 20px;'>
+    	  				</script>
+    	  			</form>
+    	  		</div>
+		        	<!-- <label class="sr-only" for="UserName">请输入新的课程名称</label>
+    				<input type="text" class="form-control" id="NewCourseName" placeholder="请输入新的课程名称"  data-placement="top" data-toggle="popover" data-content="新的课程名称不能为空">  -->
+		        </div>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-primary" id='answerButton'>发表回复</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		<!-- Modal -->
+		<div class="modal fade" id="reanswerQuestion" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		        <h4 class="modal-title" id="addUserLabel">回复</h4>
+		      </div>
+		      <div class="modal-body">
+		      	<input id='appointID' val='' style='display:none;'/>
+		        <div class='form-group'>
+		           <div align='center'>
+					<form  method="post">
+						<script id="containernew" name="content" type="text/plain" style='padding:0 20px;'>
+    	  				</script>
+    	  			</form>
+    	  		   </div>
+		        </div>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-primary" id='reanswerButton'>发表回复</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		<!-- Modal -->
+		<div class="modal fade" id="increasePicture" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-body">
+		        <div class='form-group'>
+					<img id='picture' style='width:100%;heigth:100%'>
+    	  		   </div>
+		        </div>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+</div>
+
+<script type="text/javascript">
+
+//*************************************************************************************
+var ue = UE.getEditor('container',{
+	toolbars: [
+       ['bold', 'italic', 'underline', 'fontborder',  'superscript', 'subscript', '|', 'forecolor',  '|',              
+       'simpleupload',]
+	],
+	initialFrameWidth:800,
+	saveInterval:2000,
+	initialFrameHeight:260
+});
+
+var uenew = UE.getEditor('containernew',{
+	toolbars: [
+	  ['bold', 'italic', 'underline', 'fontborder',  'superscript', 'subscript', '|', 'forecolor',  '|',              
+       'simpleupload',]
+	],
+	initialFrameWidth:800,
+	saveInterval:2000,
+	initialFrameHeight:260
+});
+//*******************************************************************************************
+ ue.ready(function(){
+	$('#edui1').css('width','100%');
+	$('#edui1_iframeholder').css('width','100%');
+ 	$('#answerButton').click(function(){
+		var question = ue.getContent();
+		if(!question){
+			alert('回复内容不能为空！');
+			return false;
+		}
+		$.ajax({
+    	type: 'POST',
+    	url:'__URL__/index/Bbs/ajax_get_bbsanswer_input?questionID={$id}',
+     	timeout: 10000,
+     	async: true,
+     	data: {
+			 'content1': question,
+    	 },
+    	 success:function(data){
+     		if(data['code']==0){
+     			alert(data['data']);
+     			$('#answerQuestion').modal('hide')
+     			getAnswerList();
+     			ue.execCommand('cleardoc');
+     		}
+     		else{
+     			console.log(data);
+     		}
+     	}
+	  });
+	}); 
+ 		$('#edui16').css('width','100%');
+ 		$('#edui16_iframeholder').css('width','100%');   //用审查元素可以看到eudi73对应的对象
+ 	 	$('#reanswerButton').click(function(){
+ 			var question = uenew.getContent();
+ 			if(!question){
+ 				alert('回复内容不能为空！');
+ 				return false;
+ 			}
+ 			$.ajax({
+ 	    	type: 'POST',
+ 	    	url:'__URL__/index/Bbs/ajax_get_bbsreanswer_input?questionID={$id}',
+ 	     	timeout: 10000,
+ 	     	async: true,                    
+ 	     	data: {
+ 				 'content1': question,
+ 				 'appointID':$('#reanswerQuestion #appointID').val(),
+ 	    	 },
+ 	    	 success:function(data){
+ 	     		if(data['code']==0){
+ 	     			alert(data['data']);
+ 	     			$('#reanswerQuestion').modal('hide')
+ 	     			getAnswerList();
+ 	     			uenew.execCommand('cleardoc');
+ 	     		}
+ 	     		else{
+ 	     			console.log(data);
+ 	     		}
+ 	     		$('.bbs-content img').attr('style','max-width:100%; max-height:300px');   //注意引用img标签和引用class的不同！
+ 	     	}
+ 		});
+ 	});
+ }); 
+ 
+
+  
+//将再回复框中button中的值取出来赋给模态框中的button 
+function addClickListenForAnswerForReanswer(){
+	 $('.answer .answerForReanswer').click(function(){
+		 $('#reanswerQuestion').modal('show');
+		 $('#reanswerQuestion #appointID').val($(this).attr('attr'));
+	 });
+ }
+ 
+//获取详情页面的回答列表
+function getAnswerList(){
+	$.ajax({
+		type:'POST',
+		url:'__URL__/index/Bbs/ajax_getAnswerListByquestionID',
+		data:{'questionID':{$id}},
+		success:function(data){
+			data = data['data'];
+			$('.answer').empty();
+			for(var v in data){
+				var str = "<div class='bbs-header' id='bbs-header' style='padding-top:10px; padding-bottom:10px; font-size:16px'><i class='fa fa-user fa-fw'></i>" + data[v]['name'] + "</div>";
+				if(data[v]['appointID'] != null){
+					 var a = data[v]['appointID'];
+					 for(var k in data){
+						 if(data[k]['id'] == a)
+							 {
+							 str = str + "<div style ='padding:20px; background-color:#F5FFFA; font-size:13px;' class='' >"
+						 	 str = str + "<div class='bbs-header' id='bbs-header'><i class='fa fa-external-link fa-fw'></i>" + data[k]['name'] + "</div>";
+						 	 str = str + "<div class='bbs-content'  id='bbs-content' style='font-size:13px'>" + data[k]['content'] + "</div>";
+							 str = str + "</div>";
+							 }
+					 }
+				}  
+				str = str + "<div class='bbs-content' id='bbs-content' style='padding-top:10px;padding-bottom:10px'>" + data[v]['content'] + "</div>";
+				str =  "<div class='panel panel-primary'>"+str +"</div>";
+				str = str +"<div><button type='button' class='btn btn-success pull-right answerForReanswer' attr="+data[v]['id']+">回复</button></div>";
+				str = "<div class='clearfix'>" + str + "</div>";
+				$('.answer').append(str);
+			}
+			addClickListenForAnswerForReanswer();
+			$('.bbs-content img').attr('style','max-width:100%; max-height:300px');   //注意引用img标签和引用class的不同！
+			increasePicture();
+		}
+	})
+}
+getAnswerList();
+
+//图片预览
+function increasePicture(){
+	$(".bbs-content img").click(function() {
+	var imgurl=$(this).attr('src');
+	$("#increasePicture").modal('show');
+	$("#picture").attr("src",imgurl);
+	});
+}
+
+//获取详情页面的问题列表
+function getQuestionList(){
+	$.ajax({
+		type:'POST',
+		url:'__URL__/index/Bbs/ajax_getQuestionListByID',
+		data:{'id':{$id}},
+		success:function(data){
+			if(data['code'] === 0){
+				data = data['data'];
+				$('.question').empty();
+					var str = "<div class='bbs-header' id='bbs-header'><i class='fa fa-user fa-fw'></i>" + data[0]['name'] + "</div>";
+					str = str + "<div class='bbs-title' id='bbs-title'><span>【标题】</span>" + data[0]['title'] + "</div>";
+					str = str + "<div class='bbs-content' id='bbs-content'>" + data[0]['content'] + "</div>";
+					str = str +"<div><button type='button' class='btn btn-success pull-right' data-toggle='modal' data-target='#answerQuestion'>回复</button></div>";
+					str = "<div class='clearfix'>" + str + "</div>";
+					$('.question').append(str);
+			}else{
+				console.log(data['errmsg']);
+			}
+		}
+	});
+}
+getQuestionList();
+
+
+
+</script>

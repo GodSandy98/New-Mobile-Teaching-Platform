@@ -1,0 +1,1123 @@
+{layout name="layout" /}
+<div class='container-fluid'>
+	<nav class="navbar navbar-default twolevel-navbar visible-xs">
+		 <div class="navbar-header"><!--这会让navbar里面的文本看起来更大一号--> 
+			<span class="navbar-brand" style='white-space:nowrap;'><a href='__URL__'><i class='fa fa-chevron-left'></i></a>{$lessionInfo['lessionName']}({$lessionInfo['id']})</span>
+		</div>
+	</nav>
+	
+	<div class='row hidden-xs'>
+		<h1 class='page-header' id="showcoursename">{$lessionInfo['lessionName']}({$lessionInfo['id']})</h1>
+	</div>
+	
+	
+		<div class='row lession_index_master'style="padding-left:15px" >
+			{if $ifMaster === 'master'}
+			<button type="button" class="btn btn-success pull-left" data-toggle="modal" data-target="#addUser"><!--BS的modal可以实现点击弹出浮动窗口的效果-->
+	  			添加成员
+			</button>
+			<button type="button" class="btn btn-success pull-left" data-toggle="modal" data-target="#rewriteCourseName"><!--BS的modal可以实现点击弹出浮动窗口的效果-->
+	  			修改课程名称
+			</button>
+			<button type="button" class="btn btn-success pull-left" data-toggle="modal" data-target="#dealApply"><!--BS的modal可以实现点击弹出浮动窗口的效果-->
+	  			查看申请
+			</button>
+			<button type="button" class="btn btn-success pull-left" data-toggle="modal" data-target="#dealGroup"><!--BS的modal可以实现点击弹出浮动窗口的效果-->
+	  			分组
+			</button>
+			{/if}
+			{if $usertype === 'teacher'}
+			<button type="button" class="btn btn-success pull-left"  data-toggle="modal" data-target="#upLoadFile">
+	  			共享资源
+			</button>
+			<button type="button" class="btn btn-success pull-left"  data-toggle="modal" data-target="#sethomework">
+	  			布置作业
+			</button>
+			{/if}
+			
+			{if $ifMaster !== 'master'}
+			<button type="button" id="outLessionButton" class="btn btn-danger pull-left"><!--BS的modal可以实现点击弹出浮动窗口的效果-->
+	  			退出课程
+			</button>
+			<!-- 这个是学生自己要退出课程 -->
+			<script type='text/javascript'>
+				$(document).ready(function(){
+					$('#outLessionButton').click(function(){
+						if(confirm("你确定要退出此课程？（退出课程后任何课程相关的记录将不可恢复）")){
+						$.ajax({
+							type:"POST",
+							url:"__URL__/index/Lession/ajax_deleteLession_user1",
+							data:{'lessionID':{$lessionID}},
+							success:function(data){
+								if(data['code'] === 0){
+									alert("退出课程成功！");
+									location.assign("__URL__");
+								}else{
+									alert(data['errmsg']);
+								}
+							}
+						});
+					}else{
+						
+
+					}
+					});
+				});
+
+			</script>
+			{/if}
+		</div>
+
+	
+	
+	{if $ifMaster === 'master'}
+
+	<!-- Modal -->
+		<div class="modal fade" id="addUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		        <h4 class="modal-title" id="addUserLabel">添加成员</h4>
+		      </div>
+		      <div class="modal-body">
+		        <div class='form-group'>
+		        	<label class="sr-only" for="UserName">请输入用户名或学号</label>
+    				<input type="text" class="form-control" id="UserName" placeholder="请输入用户名或学号"  data-placement="top" data-toggle="popover" data-content="用户名或学号不能为空"> 
+    				<div class='table-responsive' style='margin-top:10px;'>
+    				<table class="table table-condensed">
+    					<thead>
+    						<tr>
+    							<th>用户名</th>
+    							<th>真实姓名</th>
+    							<th>学校</th>
+    							<th class="hidden-xs">院系</th>
+    							<th>学号/教工号</th>
+    							<th>操作</th>
+    						</tr>
+    					</thead>
+    					<tbody id='search_user_list'  data-placement="top" data-toggle="popover" data-content="未查到任何记录">
+    					</tbody>
+    				</table>
+    				</div>
+		        </div>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-primary" id='addUserButton'>查询</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		
+		<!-- Modal -->
+		<div class="modal fade" id="dealApply" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		        <h4 class="modal-title" id="dealApplyLable">查看申请</h4>
+		      </div>
+		      <div class="modal-body">
+		        <div class='form-group'>		     
+    				<div class='table-responsive' style='margin-top:10px;'>
+    				<table class="table table-condensed">
+    					<thead>
+    						<tr>
+    							<th>用户名</th>
+    							<th>真实姓名</th>
+    							<th>学校</th>
+    							<th class="hidden-xs">院系</th>
+    							<th>学号/教工号</th>
+    							<th>同意请求</th>
+    							<th>拒绝请求</th>
+    						</tr>
+    					</thead>
+    					<tbody id='search_apply_list'>
+    					</tbody>
+    				</table>
+    				</div>
+		        </div>
+		      </div>
+		      
+		    </div>
+		  </div>
+		</div>
+		<!-- Modal -->
+		<div class="modal fade" id="rewriteCourseName" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		        <h4 class="modal-title" id="addUserLabel">修改课程名称</h4>
+		      </div>
+		      <div class="modal-body">
+		        <div class='form-group'>
+		        	<label class="sr-only" for="UserName">请输入新的课程名称</label>
+    				<input type="text" class="form-control" id="NewCourseName" placeholder="请输入新的课程名称"  data-placement="top" data-toggle="popover" data-content="新的课程名称不能为空"> 
+		        </div>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-primary" id='rewriteButton'>确认修改</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+	<div class="modal fade" id="dealGroup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		        <h4 class="modal-title" id="dealGroupLable">分组管理</h4>
+		      </div>
+		       <div class="modal-footer" style="text-align: left;padding-top: 8px;padding-right: 5px;padding-bottom: 5px;padding-left: 5px">
+		        <button type="button" class="btn btn-primary" id='groupstate'>分组状况</button>
+		        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addgroup">新建分组</button>
+		        <button type="button" class="btn btn-primary" id='groupdeal'>分组管理</button>
+		      </div>
+		     
+		      <div class="modal-body" style="padding-top: 0px;">
+		        <div class='form-group'>		     
+    				<div class='table-responsive' style='margin-top:10px;'>
+    				<table class="table table-condensed">
+    					<thead>
+    						<tr>
+    							<th>姓名</th>
+    							<th>专业班级</th>
+    							<th>学号</th>
+    							<th>联系方式</th>
+    							<th>组别</th>
+    							<th>组长</th>
+    						</tr>
+    					</thead>
+    					<tbody id='search_group_list'>
+    					</tbody>
+    				</table>
+    				</div>
+		        </div>
+		      </div>
+		      
+		    </div>
+		  </div>
+		</div>
+	
+	<div class="modal fade" id="addgroup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		        <h4 class="modal-title" id="dealGroupLable">新建分组</h4>
+		      </div>
+		      	<label class="sr-only" for="groupnum">请输入新建的组号</label>
+    			<input type="text" class="form-control" id="groupnum" placeholder="请输入新建的组号"  data-placement="top" data-toggle="popover" data-content="组号不能为空">
+		       <div class="modal-footer" style="text-align: left;padding-top: 8px;padding-right: 5px;padding-bottom: 5px;padding-left: 5px">
+		        <button type="button" class="btn btn-primary" id='addgroupbutton'>新建分组</button>		       
+		      </div>		     
+		      <div class="modal-body" style="padding-top: 0px;">
+		        <div class='form-group'>		     
+    				<div class='table-responsive' style='margin-top:10px;'>
+    				<table class="table table-condensed">
+    					<thead>
+    						<tr>
+    							<th>姓名</th>
+    							<th>专业班级</th>
+    							<th>学号</th>
+    							<th>操作</th>
+    						</tr>
+    					</thead>
+    					<tbody id='add_groupnum_list'>
+    					</tbody>
+    				</table>
+    				</div>
+		        </div>
+		      </div>
+		      
+		    </div>
+		  </div>
+		</div>
+	
+	
+	<script type='text/javascript'>
+	
+	$('#dealGroup').on('show.bs.modal',function(){
+		$('#groupdeal').click(function(){			
+			var data = {};
+			$.ajax({
+				type:"POST",
+				url:"__URL__/index/Lession/ajax_getUserListByLessionID",
+				data:{'lessionID':{$lessionID}},
+				success:function(data){
+					//console.log(data);return;
+					if(data['code'] === 0){
+						data = data['data'];
+						$('#search_group_list').empty();
+						if(data.length === 0){
+						}
+						for(var v in data){
+							var str =  '<td>'+data[v]['name']+'</td>';
+							str = str + '<td>'+data[v]['major']+'</td>';
+							str = str + '<td>'+data[v]['studentID']+'</td>';
+							str = str + '<td>'+data[v]['phone']+'</td>';
+							if(data[v]['type'] === 'student'){
+							str = str + '<td><input type="text" attr="' + data[v]['ID'] + '"  style="width: 50px ; height: 30px" value="'+data[v]['group']+'" class="txtgroup"></td>';
+							if(data[v]['IsHeadman']=="N"){
+							str = str + '<td><select class="selectheadman"  attr="' + data[v]['ID'] + '" style="width: 50px ; height: 30px" name="headmanmm"><option id="null" value="null"></option><option id="Y" value="Y">Y</option><option id="N" value="N" selected>N</option>						</select></td>';
+							}
+							else if(data[v]['IsHeadman']=="Y"){
+								str = str + '<td><select class="selectheadman"  attr="' + data[v]['ID'] + '"  style="width: 50px ; height: 30px" name="headmanmm"><option id="null" value="null"></option><option id="Y" value="Y" selected>Y</option><option id="N" value="N" >N</option>						</select></td>';
+								}
+							else {
+								str = str + '<td><select class="selectheadman"  attr="' + data[v]['ID'] + '"  style="width: 50px ; height: 30px" name="headmanmm"><option id="null" value="null" selected></option><option id="Y" value="Y">Y</option><option id="N" value="N" >N</option>						</select></td>';
+								}
+							}
+							else{}str = '<tr>' + str + '</tr>';
+							$('#search_group_list').append(str);
+						}
+						addListen();
+					}else{
+						alert(data['errmsg']);
+					}
+				}
+			});			
+		});
+		$('#groupstate').click(function(){			
+			var data = {};
+			$.ajax({
+				type:"POST",
+				url:"__URL__/index/Lession/ajax_getUserListByLessionID",
+				data:{'lessionID':{$lessionID}},
+				success:function(data){
+					//console.log(data);return;
+					if(data['code'] === 0){
+						data = data['data'];
+						$('#search_group_list').empty();
+						if(data.length === 0){
+						}
+						for(var v in data){
+							var str =  '<td>'+data[v]['name']+'</td>';
+							str = str + '<td>'+data[v]['major']+'</td>';
+							str = str + '<td>'+data[v]['studentID']+'</td>';
+							str = str + '<td>'+data[v]['phone']+'</td>';
+							if(data[v]['type'] === 'student'){
+							str = str + '<td>'+data[v]['group']+'</td>';
+							str = str + '<td>'+data[v]['IsHeadman']+'</td>';}
+							str = '<tr>' + str + '</tr>';
+							$('#search_group_list').append(str);
+						}				
+					}else{
+						alert(data['errmsg']);
+					}
+				}
+			});			
+		});
+		$('#addgroup').on('show.bs.modal',function(){
+			////////////点击新建组号			
+			$('#addgroupbutton').click(function(){	
+				var groupnum = $('#groupnum').val();
+				if(!groupnum){
+					$('#groupnum').popover('show');
+					setTimeout(function(){$('#groupnum').popover('destroy');},3000);
+					return false;
+				}
+				if((/^(\+|-)?\d+$/.test( groupnum ))&&groupnum>=0){   
+						var data = {};
+						$.ajax({
+							type:"POST",
+							url:"__URL__/index/Lession/ajax_getNogroupUserListByLessionID",
+							data:{'lessionID':{$lessionID}},
+							success:function(data){
+								//console.log(data);return;
+								if(data['code'] === 0){
+									data = data['data'];
+									$('#add_groupnum_list').empty();
+									if(data.length === 0){
+									}
+									for(var v in data){
+										if(data[v]['type'] === 'student'){
+										var str =  '<td>'+data[v]['name']+'</td>';
+										str = str + '<td>'+data[v]['major']+'</td>';
+										str = str + '<td>'+data[v]['studentID']+'</td>';
+										str = str + '<td><button type="button" class="btn btn-success btn-xs adduserTogroup" attr="'+ data[v]['ID'] +'"><i class="fa fa-check fa-fw"></i></button></td>';
+										str = '<tr>' + str + '</tr>';}
+										$('#add_groupnum_list').append(str);
+									}	
+									addListen();
+								}else{
+									alert(data['errmsg']);
+								}
+							}
+						});	
+					}else{
+						    alert("数量中请输入正整数！"); 
+					        return false;
+					     }
+		});
+			
+		});
+	
+	});
+	function addListen(){
+	$('#search_group_list .txtgroup').blur(function(){
+		var group = $(this).val();	
+		var data = {};
+		 
+	    if((/^(\+|-)?\d+$/.test( group ))&&group>=0)
+	    {  
+		   data['group'] = group;
+		   data['lessionID'] = {$lessionID};
+		   data['userID'] = $(this).attr('attr');
+		   //console.log(data);return;
+		   $.ajax({
+		    	type:'POST',
+		    	url:'__URL__/index/teacher/ajax_changeUserGroup',
+			    data:data,
+		    	success:function(data){
+		    		if(data['code'] === 0){			
+    				}else{
+		    		}
+		    	}
+	    	});
+	   }else{  
+		       alert("数量中请输入正整数！"); 
+		       return false;
+		    } 
+	});
+	$('#search_group_list .selectheadman').change(function(){
+		var headman = $(this).val();	
+		var data = {};
+		data['headman'] = headman;
+		data['lessionID'] = {$lessionID};
+		data['userID'] = $(this).attr('attr');
+		$.ajax({
+			type:'POST',
+			url:'__URL__/index/teacher/ajax_changeUserIsHeadman',
+			data:data,
+			success:function(data){
+				if(data['code'] === 0){					
+				}else{
+				}
+			}
+		});
+	});
+	
+
+	$('.adduserTogroup').click(function(){
+		$(this).remove();
+		var group = $('#groupnum').val();
+		//alert(group);
+		var data = {};
+		 
+	    if((/^(\+|-)?\d+$/.test( group ))&&group>=0)
+	    {  
+		   data['group'] = group;
+		   data['lessionID'] = {$lessionID};
+		   data['userID'] = $(this).attr('attr');
+		   //console.log(data);return;
+		   $.ajax({
+		    	type:'POST',
+		    	url:'__URL__/index/teacher/ajax_changeUserGroup',
+			    data:data,
+		    	success:function(data){
+		    		if(data['code'] === 0){			
+    				}else{
+		    		}
+		    	}
+	    	});
+	   }else{  
+		       alert("数量中请输入正整数！"); 
+		       return false;
+		    } 
+		
+	});
+	}
+	
+	
+	$(document).ready(function(){
+		function addClickListen_addUser(){
+			$('.adduserTolession').click(function(){
+				$(this).remove();
+				$.ajax({
+					type:"POST",
+					url:"__URL__/index/Lession/ajax_addUserToLession",
+					data:{'userID':$(this).attr('attr'),'lessionID':{$lessionID}},
+					success:function(data){
+						if(data['code'] === 0){
+							
+						}else{
+							alert(data['errmsg']);
+						}
+					}
+				});
+				
+			});
+		}
+		
+		function addClickListen_deleteUserFromLession_Apply(){
+			$('.deleteuserFromlession_Apply').click(function(){
+				$(this).remove();
+				$.ajax({
+					type:"POST",
+					url:"__URL__/index/Lession/ajax_deleteLession_apply",
+					data:{'userID':$(this).attr('attr'),'lessionID':{$lessionID}},
+					success:function(data){
+						if(data['code'] === 0){
+							alert("已取消此学生的申请！");
+						}else{
+							alert(data['errmsg']);
+						}
+					}
+				});
+				
+			});
+		}
+		
+		
+		$('#addUserButton').click(function(){
+			if(!$('#UserName').val()){
+				$('#UserName').popover('show');
+				setTimeout(function(){$('#UserName').popover('destroy');},3000);
+				return false;
+			}
+			var data = {};
+			data['UserName'] = $('#UserName').val();
+			$.ajax({
+				type:"POST",
+				url:"__URL__/index/User/ajax_searchUserByUserOrStudentID",
+				data:data,
+				success:function(data){
+					if(data['code'] === 0){
+						data = data['data'];
+						$('#search_user_list').empty();
+						if(data.length === 0){
+							$('#search_user_list').popover('show');
+							setTimeout(function(){$('#search_user_list').popover('destroy');},2000);
+							return;
+						}
+						for(var v in data){
+							var str = '<td>'+data[v]['username']+'</td>';
+							str = str + '<td>'+data[v]['name']+'</td>';
+							str = str + '<td>'+data[v]['school']+'</td>';
+							str = str + '<td class="hidden-xs">'+data[v]['academy']+'</td>';
+							str = str + '<td>'+data[v]['studentID']+'</td>';
+							$.ajax({
+								type:"POST",
+								url:'__URL__/index/lession/ajax_checkIfUserInLession',
+								data:{'userID':data[v]['ID'],'lessionID':{$lessionID}},
+								async:false,
+								success:function(data2){
+									if(data2['code'] === 0){
+										if(data2['data'] === false){
+											str = str + '<td><button type="button" class="btn btn-success btn-xs adduserTolession" attr="'+ data[v]['ID'] +'"><i class="fa fa-check fa-fw"></i></button></td>';
+										}else{
+											str = str + '<td></td>';
+										}
+									}else{
+										console.log(data2['errmsg']);
+									}
+								}
+							});
+							str = '<tr>' + str + '</tr>';
+							$('#search_user_list').append(str);
+						}
+						addClickListen_addUser();
+					}else{
+						alert(data['errmsg']);
+					}
+				}
+			});
+		});
+	
+		
+		
+		$('#dealApply').on('show.bs.modal',function(){
+			var data = {};
+			$.ajax({
+				type:"POST",
+				url:"__URL__/index/Lession/ajax_getApplyListByLessionID",
+				data:{'lessionID':{$lessionID}},
+				success:function(data){
+					//console.log(data);return;
+					if(data['code'] === 0){
+						data = data['data'];
+						$('#search_apply_list').empty();
+						if(data.length === 0){
+						}
+						for(var v in data){
+							var str = '<td>'+data[v]['username']+'</td>';
+							str = str + '<td>'+data[v]['name']+'</td>';
+							str = str + '<td>'+data[v]['school']+'</td>';
+							str = str + '<td class="hidden-xs">'+data[v]['academy']+'</td>';
+							str = str + '<td>'+data[v]['studentID']+'</td>';
+							str = str + '<td><button type="button" class="btn btn-success btn-xs adduserTolession" attr="'+ data[v]['ID'] +'"><i class="fa fa-check fa-fw"></i></button></td>';
+							str = str + '<td><button type="button" class="btn btn-danger btn-xs deleteuserFromlession_Apply" attr="'+ data[v]['ID'] +'"><i class="fa fa-close fa-fw"></i></button></td>';
+							str = '<tr>' + str + '</tr>';
+							$('#search_apply_list').append(str);
+						}
+						addClickListen_addUser();
+						addClickListen_deleteUserFromLession_Apply();
+					}else{
+						alert(data['errmsg']);
+					}
+				}
+			});
+		});
+
+		$('#rewriteButton').click(function(){
+			if(!$('#NewCourseName').val()){
+				$('#NewCourseName').popover('show');
+				setTimeout(function(){$('#NewCourseName').popover('destroy');},3000);
+				return false;
+			}
+			if($('#NewCourseName').val()=="{$lessionInfo['lessionName']}"){
+				alert('名称未改变！');
+				return false
+			}
+			
+			var data = {};
+			data['NewCourseName'] = $('#NewCourseName').val();
+			data['CourseID'] = {$lessionID};
+			$.ajax({
+				type:"POST",
+				url:"__URL__/index/Lession/ajax_rewriteLessionName",
+				data:data,
+				success:function(data){
+					console.log(data);
+					if(data['code'] === 0){
+						alert(data['data']);
+						$('#rewriteCourseName').modal('toggle');
+						$('#showcoursename').html($('#NewCourseName').val()+'('+"{$lessionInfo['id']}"+")");
+						//str =({$lessionInfo['id']});
+						//$('#showcoursename').append(str);
+						
+					}else{
+						alert(data['errmsg']);
+					}
+				}
+			});
+		});
+	});
+	</script>
+	{/if}
+	
+	
+	{if $usertype === 'teacher'}
+		{include file="/public/uploadFile" /}
+		{include file="/public/sethomework" /}
+		{include file="/Lession/KnowledgePoint" /}
+	{/if}
+	<div class='row'>
+		<div class='col-xs-12 col-md-6'>
+			<div class='panel panel-default'>
+				<div class='panel-heading'>
+					<i class='fa fa-folder fa-fw'></i>&nbsp;&nbsp;共享资源
+					{if $usertype === 'teacher'}
+					<div class="pull-right btn-group" data-toggle="buttons">
+					  <label class="btn btn-default btn-xs">
+					    <input id='manage_sharefile' type="checkbox" autocomplete="off">管理
+					  </label>
+					</div>
+					{/if}
+				</div>
+				<div class='panel-body'>
+					<div id='searchShareFileByName' class="input-group custom-search-form" style='margin-bottom:10px;'>
+	                	<input type="text" class="form-control" placeholder="查找共享资源" />
+	                    <span class="input-group-btn">
+	                    	<button class="btn btn-default" type="button">
+	                    		<i class="fa fa-search"></i>
+	                       	</button>
+	                    </span>
+	                </div>
+					<div class='list-group' id='ShareFileList'>
+					</div>
+					<a class='btn btn-default btn-block' id='seeAllShareFileList'>查看全部</a>
+				</div>
+			</div>
+			
+			<div class='panel panel-default BBS'>
+				<div class='panel-heading'>
+					<i class='fa fa-cubes fa-fw'></i>&nbsp;&nbsp;课程论坛
+					{if $usertype === 'teacher'}
+					<div class=' pull-right' data-toggle="modal" data-target="#statisticOfMessageBoard"><i class='fa fa-bar-chart-o fa-fw' style='cursor:pointer;'></i></div>
+					{/if}
+				</div>
+				<div class='panel-body'>
+					<div class='list-group aaa'>
+
+					</div>
+					<a href="__URL__/index/Bbs/bbs_q?lessionID={$lessionID}" class='btn btn-default btn-block'>进入留言板</a>
+				</div>
+			</div>
+		</div>
+		<div class='col-xs-12 col-md-6'>
+			<div class='panel panel-default'>
+				<div class='panel-heading'>
+					<i class='fa fa-clipboard fa-fw'></i>&nbsp;&nbsp;课后作业
+					{if $usertype === 'teacher'}
+					<div class=' pull-right' data-toggle="modal" data-target="#statisticOfHomework"><i class='fa fa-bar-chart-o fa-fw' style='cursor:pointer;margin-left:10px;'></i></div>
+					<div class="pull-right btn-group" data-toggle="buttons">
+					  <label class="btn btn-default btn-xs">
+					    <input id='manage_homework' type="checkbox" autocomplete="off">管理
+					  </label>
+					</div>
+					{/if}
+				</div>
+				<div class='panel-body'>
+					<div class='list-group' id='homeworkList'>
+					</div>
+					<a class='btn btn-default btn-block' id='seeAllHomeworkList'>查看全部</a>
+				</div>
+			</div>
+			
+			<div class='panel panel-default' id='User_list_panel'>
+				<div class='panel-heading'>
+					<i class='fa fa-users fa-fw'></i>&nbsp;&nbsp;人员列表（<font id='User_list_panel_num'></font>）
+					{if $usertype === 'teacher'}
+					<div class=' pull-right' data-toggle="modal" data-target="#AuthorityOfUsers"><i class='fa fa-ellipsis-h fa-fw' style='cursor:pointer;'></i></div>
+					{/if}
+				</div>
+				<div class='panel-body'>
+					<table class='table table-striped'>
+						<tbody id='User_list_panel_table_tbody'>
+    					</tbody>
+					</table>
+					<a class='btn btn-default btn-block' id='seeAllUserList'>查看全部</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{include file="/public/homework_submit"}  <!-- 在一个文件中使用另一个文件中的内容，必须先把另一个文件引进来！！！！！！ -->
+{include file="/Lession/viewOfShareFile"}
+{if $usertype === 'teacher'}
+{include file="/Lession/watchHomeworkTable"}
+{include file="/Lession/recordOfShareFile"}
+{include file="/Lession/statisticOfHomework"}
+{include file="/Lession/statisticOfMessageBoard"}
+{include file="/Lession/AuthorityOfUsers"}
+{/if}
+
+<script type="text/javascript">
+$(document).ready(function(){
+	var ShareFileListLimit = 6;
+	var SearchShareFileByName = null;
+	var ShareFileList;
+	var modalName = '#viewOfShareFile ';
+	var modalName2 = '#recordOfShareFileModal ';
+	
+	function addDowloadFileListen(){
+		$('#ShareFileList .list-group-item .dowload_file').click(function(){
+			window.open('__URL__/index/sharefile/dowloadFile?id='+$(this).attr('attr')+'&type=ShareFile');
+		});
+		{if $usertype === 'teacher'}
+		$('#ShareFileList .list-group-item .delete_file').click(function(){
+			var id = $(this).attr('attr');
+			if(confirm('您确定要删除此资源？')){
+				$.ajax({
+					type:'POST',
+					url:'__URL__/index/teacher/ajax_deleteShareFile',
+					data:{shareid:id,lessionID:'{$lessionID}'},
+					success:function(data){
+						if(data['code'] === 0){
+						}else{
+							alert(data['errmsg']);
+						}
+						getShareFileList(ShareFileListLimit,SearchShareFileByName);
+					}
+				});
+			}
+		});
+		{/if}
+		$('#ShareFileList .list-group-item .preview_file').click(function(){
+			var id = $(this).attr('attr');
+			if(ShareFileList[id]['file_type'] === 'video'){
+				$(modalName).modal('show');
+				$(modalName+'#ShareFileID').val(ShareFileList[id]['id']);
+				$(modalName+'.modal-title').html(ShareFileList[id]['name']);
+			}else if(ShareFileList[id]['file_type'] === 'pdf'){
+				var newWin = window.open("","_blank");
+				$.ajax({
+					type:'POST',
+					url:'__URL__/index/ShareFile/ajax_getShareFileAddress',
+					data:{'id':ShareFileList[id]['id'],'type':'ShareFile'},
+					success:function(data){
+						if(data['code'] === 0){
+							data = data['data'];
+							newWin.location.href = "__PUBLIC__/pdf/web/viewer.html?file="+encodeURIComponent("__PUBLIC__/"+data);
+						}else{
+							alert(data['errmsg']);
+						}
+					}
+				});
+			}else if(ShareFileList[id]['file_type'] === 'office'){
+				var newWin = window.open("","_blank");
+				$.ajax({
+					type:'POST',
+					url:'__URL__/index/ShareFile/ajax_getShareFileAddress_office',
+					data:{'id':ShareFileList[id]['id'],'type':'ShareFile'},
+					success:function(data){
+						if(data['code'] === 0){
+							data = data['data'];
+							newWin.location.href = "__PUBLIC__/pdf/web/viewer.html?file="+encodeURIComponent("__PUBLIC__/"+data);
+						}else{
+							alert(data['errmsg']);
+						}
+					}
+				});
+			}
+		});
+		
+		$('#ShareFileList .list-group-item .file_name').click(function(){
+			var id = $(this).attr('attr');
+			$(modalName2).modal('show');
+			var data = ShareFileList[id];
+			$(modalName2+'#shareFileID').val(data['id']);
+			$(modalName2+'.modal-title').html(data['name']);
+		});
+	}
+	function getShareFileList(limit,search,callback){
+		var data = {'lessionID':{$lessionID}};
+		if(limit != 0){
+			data['limit'] = limit;
+		}
+		if(search !== null){
+			data['searchName'] = search;
+		}
+		$.ajax({
+			type:'POST',
+			url:'__URL__/index/lession/ajax_getShareFileList',
+			data:data,
+			success:function(data){
+				if(data['code'] === 0){
+					data = data['data'];
+					ShareFileList = data;
+					$('#ShareFileList').empty();
+					if(data.length === 0){
+						$('#ShareFileList').html('<div style="text-align:center">没有共享文件</div>');
+					}
+					for(var k in data){
+						var str1 = '<a class="file_name" attr="' + k + '" style="max-width:200px;overflow:hidden;cursor:pointer;">' + data[k]['name'] + '</a>';
+						if(data[k]['file_type'] === 'video'){
+							str1 = str1 + "<a class='preview_file' attr='" + k + "' style='cursor:pointer;'><i class='fa fa-play-circle-o fa-fw'></i></a>"
+						}else if(data[k]['file_type'] === 'pdf' || data[k]['file_type'] === 'office'){
+							str1 = str1 + "<a class='preview_file' attr='" + k + "' style='cursor:pointer;'><i class='fa fa-eye fa-fw'></i></a>"
+						}
+						str1 = "<div class='col-xs-10' style='white-space:nowrap;overflow:hidden;padding-right:0;'>" + str1 + "</div>";
+						var str2 = "<a class='dowload_file' attr='" + data[k]['id'] + "' style='cursor:pointer;'><i class='fa fa-download fa-fw pull-right'></i></a>";
+						{if $usertype === 'teacher'}
+						str2 = "<a class='delete_file' attr='" + data[k]['id'] + "' style='cursor:pointer;display:none;color:red;'><i class='fa fa-trash fa-fw pull-right'></i></a>" + str2;
+						{/if}
+						str2 = "<div class='col-xs-2' style='padding:0;padding-right:10px;min-width:30px;'>" + str2 + "</div>";
+						var str = str1 + str2;
+						str = "<div class='row'>" + str + "</div>"
+						str = "<li class='list-group-item'>" + str + "</li>";
+						$('#ShareFileList').append(str);
+					}
+					addDowloadFileListen();
+					$('#manage_sharefile').change();
+				}else{
+					console.log(data);
+				}
+				if(callback){
+					callback();
+				}
+			}
+		});
+	}
+	getShareFileList(ShareFileListLimit,null);
+	$('#upLoadFile').on('hide.bs.modal', function (e) {
+		getShareFileList(ShareFileListLimit,SearchShareFileByName);
+	});
+	$('#seeAllShareFileList').click(function(){
+		if(ShareFileListLimit !== 0){
+			ShareFileListLimit = 0;
+			getShareFileList(ShareFileListLimit,SearchShareFileByName,function(){
+				$('#seeAllShareFileList').html('收回');
+			});
+		}else{
+			ShareFileListLimit = 6;
+			getShareFileList(ShareFileListLimit,SearchShareFileByName,function(){
+				$('#seeAllShareFileList').html('查看全部');
+			});
+		}
+	});
+	$('#searchShareFileByName .input-group-btn').click(function(){
+		SearchShareFileByName = $('#searchShareFileByName input').val();
+		getShareFileList(ShareFileListLimit,SearchShareFileByName);
+	});
+	
+	$('#manage_sharefile').change(function(){
+		if($(this).prop('checked') === true){
+			$('#ShareFileList .delete_file').show();
+		}else{
+			$('#ShareFileList .delete_file').hide();
+		}
+	});
+	
+});
+
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	var HomeworkListLimit = 7;
+	var HomeworkList = {};
+	var modalName = '#OneHomeworkModal ';
+	var modalName2 = '#WatchHomeworkModal ';
+	
+	function addItemClickListen(){
+		$('#homeworkList .list-group-item .HomeworkListItem').click(function(){
+			var id = $(this).attr('attr');
+			$(modalName).modal('show');
+			modalInit(HomeworkList[id]);
+		});
+		{if $usertype === 'teacher'}
+		$('#homeworkList .list-group-item .watchHomeworkTable').click(function(){
+			var id = $(this).attr('attr');
+			$(modalName2).modal('show');
+			var data = HomeworkList[id];
+			$(modalName2+'.modal-title .modal_title').html(data['title']);
+			$(modalName2+'.modal-title .modal_num').html('');
+			$(modalName2+'#homeworkID').val(data['id']);
+		});
+		$('#homeworkList .list-group-item .delete_file').click(function(){
+			var id = $(this).attr('attr');
+			if(confirm('您确定要删除此作业？')){
+				$.ajax({
+					type:'POST',
+					url:'__URL__/index/teacher/ajax_deleteHomework',
+					data:{homeworkID:id,lessionID:'{$lessionID}'},
+					success:function(data){
+						if(data['code'] === 0){
+						}else{
+							alert(data['errmsg']);
+						}
+						getHomeworkList(HomeworkListLimit);
+					}
+				});
+			}
+		});
+		{/if}
+	}
+	
+	function getHomeworkList(limit,callback){
+		var data = {'lessionID':{$lessionID}};
+		if(limit != 0){
+			data['limit'] = limit;
+		}
+		$.ajax({
+			type:'POST',
+			url:'__URL__/index/lession/ajax_getHomeworkList',
+			data:data,
+			success:function(data){
+				console.log(data['data']);
+				if(data['code'] === 0){
+					data = data['data'];
+					HomeworkList = data;
+					$('#homeworkList').empty();
+					if(data.length === 0){
+						$('#homeworkList').html('<div style="text-align:center">没有课后作业</div>');
+					}
+					for(var k in data){
+						var str1 = "<a class='HomeworkListItem' style='cursor:pointer;' attr='"+k+"'>" + data[k]['title'] + '</a>';
+						str1 = "<div class='col-xs-8' style='white-space:nowrap;overflow:hidden'>" + str1 + "</div>";
+						var str2 = "";
+						{if $usertype === 'teacher'}
+						str2 = "<i class='fa fa-table fa-fw pull-right'></i>"
+						str2 = "<a class='watchHomeworkTable' style='cursor:pointer;' attr='"+ k +"'>" + str2 + "</a>";
+						str2 = "<a class='delete_file' attr='" + data[k]['id'] + "' style='cursor:pointer;display:none;color:red;'><i class='fa fa-trash fa-fw pull-right'></i></a>" + str2;
+						str2 = "<div class='col-xs-4'>" + str2 + "</div>";
+						{/if}
+						{if $usertype === 'student'}
+						if(data[k]['StudentFileID']!=0){
+							str2="<td><a class=\'dowload_file\' style=\"float: right;margin-right: 10px;margin-top: 5px;\" target=\'_blank\' href= '__URL__/index/sharefile/dowloadFile?id=" + data[k]['StudentFileID'][0]['id'] + "&type=Submit\' style=\'cursor:pointer;\'><i class=\'fa fa-download fa-fw\'></i></ a></td>"
+      						//str2="<td><a class=\'dowload_file\' style=\"float: right;margin-right: 10px;margin-top: 5px;\" target=\'_blank\' href=\'__URL__/index/sharefile/dowloadFile?id=" + data[k]['StudentFileID'] + "&type=Submit\' style=\'cursor:pointer;\'><i class=\'fa fa-download fa-fw\'></i></ a></td>"
+						} 
+      					{/if}
+						var str = "<div class='row'>" + str1 + str2 + '</div>';
+						str = "<li class='list-group-item'>" + str + '</li>';
+						$('#homeworkList').append(str);
+					}
+					addItemClickListen();
+					$('#manage_homework').change();
+				}else{
+					console.log(data['errmsg']);
+				}
+				if(callback){
+					callback();
+				}
+			}
+		});
+	}
+	getHomeworkList(HomeworkListLimit);
+	$('#sethomework').on('hide.bs.modal', function (e) {
+		getHomeworkList(HomeworkListLimit);
+	});
+	$('#seeAllHomeworkList').click(function(){
+		if(HomeworkListLimit !== 0){
+			HomeworkListLimit = 0;
+			getHomeworkList(HomeworkListLimit,function(){
+				$('#seeAllHomeworkList').html('收回');
+			});
+		}else{
+			HomeworkListLimit = 7;
+			getHomeworkList(HomeworkListLimit,function(){
+				$('#seeAllHomeworkList').html('查看全部');
+			});
+		}
+	});
+	$('#manage_homework').change(function(){
+		if($(this).prop('checked') === true){
+			$('#homeworkList .delete_file').show();
+		}else{
+			$('#homeworkList .delete_file').hide();
+		}
+	});
+	
+	function modalInit(data){
+		$(modalName+'.text-danger').hide();
+		$(modalName+'.modal-title').html(data['title']);
+		if(data['content']){
+			$(modalName+'#homeworkContent').show();
+			$(modalName+'#homeworkContent').html(data['content']);
+		}else{
+			$(modalName+'#homeworkContent').hide();
+		}
+		$(modalName+'#start_time').html(data['starttime']);
+		$(modalName+'#end_time').html(data['endtime']);
+		$(modalName+'#test_case').html(data['test_case']);
+		$(modalName+'#test_case1').html(data['test_case1']);
+		$(modalName+'#correct_result').html(data['correct_result']);
+		$(modalName+'#correct_result1').html(data['correct_result1']);
+		if(data['file_MD5']){
+			$(modalName+'#file').show();
+			var str = data['filename'];
+			if(data['file_type'] === 'pdf' || data['file_type'] === 'office'){
+				str = str + "<a class='preview_file' attr='"+data['file_type']+"' style='cursor:pointer;'><i class='fa fa-eye fa-fw'></i></a>"
+			}
+			$(modalName+'#filename').html(str);
+		}else{
+			$(modalName+'#file').hide();
+		}
+		$(modalName+'.dowload_file').attr('href','__URL__/index/sharefile/dowloadFile?id='+data['id']+'&type=Homework');
+		var starttime = Date.parse(new Date(data['starttime'].replace(/-/g, "/")));
+		var endtime = Date.parse(new Date(data['endtime'].replace(/-/g, "/")));
+		var nowtime = Date.parse(new Date());
+		if(starttime < nowtime && endtime > nowtime){
+			$(modalName+'#upload_file').removeAttr('disabled');
+			$(modalName+'#upload_button').removeAttr('disabled');
+		}else{
+			$(modalName+'#upload_file').attr('disabled','disabled');
+			$(modalName+'#upload_button').attr('disabled','disabled');	
+			$(modalName+'.text-danger').html('不在可上传作业的时间');
+			$(modalName+'.text-danger').show();
+		}
+		$(modalName+'#upload_file').val('');
+		$(modalName+'#alreadyUpload').html('');
+		$(modalName+'#homeworkID').val(data['id']);
+	}
+	
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	var userLimit = 10;
+	var userList;
+	
+	function setUserTable(data,limit){
+		$('#User_list_panel_table_tbody').empty();
+		$('#User_list_panel_num').empty();
+		$('#User_list_panel_num').html(data.length);
+		var length = data.length;
+		if(limit !== 0){
+			length = Math.min(limit,length);
+		}
+		for(var v = 0; v < length; v++){
+			var str = '<td></td>';
+			switch(data[v]['type']){
+			case 'master': str = str + "<td><i class='fa fa-graduation-cap fa-fw' style='color:blue'></i> "+data[v]['name']+"</td>";break;
+			case 'teacher': str = str + "<td><i class='fa fa-graduation-cap fa-fw'></i> "+data[v]['name']+"</td>";break;
+			case 'student': str = str + "<td><i class='fa fa-user fa-fw'></i> "+data[v]['name']+"</td>";break;
+			}
+			str = str + "<td>"+data[v]['studentID']+"</td>";
+			str = '<tr>'+str+'</tr>';
+			$('#User_list_panel_table_tbody').append(str);
+		}
+	}
+	
+	function getUserList(){
+		$.ajax({
+			type:'POST',
+			url:'__URL__/index/lession/ajax_getUserListByLessionID',
+			data:{'lessionID':{$lessionID}},
+			success:function(data){
+				if(data['code'] === 0){
+					data = data['data'];
+					userList = data;
+					setUserTable(userList,userLimit);
+				}else{
+					console.log(data['errmsg']);
+				}
+			}
+		});
+	}
+	getUserList();
+	
+	//下面是管理员或者老师删除学生
+	//因为deleteuserFromlession这个button的操作是调用了ajax的，要创建它的绑定事件必须确保ajax中的success操作执行了，所以要用函数的方法。
+	
+	$('#addUser').on('hide.bs.modal', function (e) {      //关闭模态框时刷新用户列表！
+		getUserList();
+	});
+	$('#dealApply').on('hide.bs.modal', function (e) {
+		getUserList();
+	});
+	$('#AuthorityOfUsers').on('hide.bs.modal', function (e) {
+		getUserList();
+	});
+	$('#seeAllUserList').click(function(){
+		if(userLimit !== 0){
+			userLimit = 0;
+			setUserTable(userList,userLimit);
+			$(this).html('收回');
+		}else{
+			userLimit = 10;
+			setUserTable(userList,userLimit);
+			$(this).html('查看全部');
+		}
+	});
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+	function getQuestionList(){
+		$.ajax({
+			type:'POST',
+			url:'__URL__/index/Bbs/ajax_getQuestionListByLessionID',
+			data:{'lessionID':{$lessionID}},
+			success:function(data){
+				if(data['code'] === 0){
+					data = data['data'];
+					$('.aaa').empty();
+						for(var v=0; v<Math.min(3,data.length); v++){
+						//var str = '<td></td>';
+						//在这里将数组的html标签去掉，只保留文本。
+						var s = data[v]['content'].toString();    
+						var dd = s.replace(/<\/?.+?>/g,"");
+						var dds=dd.replace(/&nbsp;/g,"");
+						var str = "<div class='bbs-header' id='bbs-header'><i class='fa fa-user fa-fw'></i>" + data[v]['name'] + "</div>";
+						str = str + "<div class='bbs-title' id='bbs-title'>" + data[v]['title'] + "</div>";
+						str = str + "<div class='bbs-content' id='bbs-content'>" + dds + "</div>";
+						str = "<a href='__URL__/index/Bbs/question_detail?lessionID={$lessionID}&id="+data[v]['id']+"' style='text-decoration:none;'><div class='clearfix'>" + str + "</div></a>";
+						$('.aaa').append(str);
+						}
+				}else{
+					console.log(data['errmsg']);
+				}
+			}
+		});
+	}
+	getQuestionList();
+});
+</script>

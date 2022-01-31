@@ -1,0 +1,329 @@
+{include file="/public/header" /}
+{include file="/public/applyModal" /}
+<div id='header'>
+	<nav class="navbar navbar-default" role="navigation" style='margin:0 0;'>
+		<div class="container-fluid" style='padding:0 0;'> 
+			<div class="navbar-header" style='padding:0 15px;'>
+			<!-- data-toggle，用于告诉 JavaScript 需要对按钮做什么 -->
+			<!-- data-target，用于告诉 JavaScript 指示要切换到哪一个元素 -->
+				<button type="button" class="navbar-toggle" data-toggle="collapse"  
+						data-target=".navbar-collapse">
+					<span class="sr-only">切换导航</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">移动教学平台 V1.0</a>
+			</div>
+			
+			
+			
+			<ul class="nav navbar-top-links navbar-right in" style='padding:0 10px;'>
+		                <li class="dropdown">
+		                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+		                        <i class="fa fa-envelope fa-fw"></i> <i class="fa fa-caret-down hidden-xs"></i>
+		                    </a>
+		                    <ul class="dropdown-menu dropdown-messages">
+	 <!-- 	                        <li>
+		                            <a href="#">
+		                                <div>
+		                                    <strong>John Smith</strong>
+		                                    <span class="pull-right text-muted">
+		                                        <em>Yesterday</em>
+		                                    </span>
+		                                </div>
+		                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+		                            </a>
+		                        </li>
+		                        <li class="divider"></li>
+		                        <li>
+		                            <a href="#">
+		                                <div>
+		                                    <strong>John Smith</strong>
+		                                    <span class="pull-right text-muted">
+		                                        <em>Yesterday</em>
+		                                    </span>
+		                                </div>
+		                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+		                            </a>
+		                        </li>
+		                        <li class="divider"></li>
+		                        <li>
+		                            <a href="#">
+		                                <div>
+		                                    <strong>John Smith</strong>
+		                                    <span class="pull-right text-muted">
+		                                        <em>Yesterday</em>
+		                                    </span>
+		                                </div>
+		                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+		                            </a>
+		                        </li>
+		                        <li class="divider"></li>
+		                        <li>
+		                            <a class="text-center" href="#">
+		                                <strong>Read All Messages</strong>
+		                                <i class="fa fa-angle-right"></i>
+		                            </a>
+		                        </li>--!>
+		                    </ul>
+		                    
+		                </li>
+		                
+		                
+		                
+		                
+		                
+		                <!-- /.dropdown -->
+		                <li class="dropdown">
+		                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+		                        <i class="fa fa-tasks fa-fw"></i> <i class="fa fa-caret-down hidden-xs"></i>
+		                    </a>
+		                    <ul class="dropdown-menu dropdown-tasks">
+		<!--                         <li>
+		                            <a href="#">
+		                                <div>
+		                                    <p>
+		                                        <strong>Task 1</strong>
+		                                        <span class="pull-right text-muted">40% Complete</span>
+		                                    </p>
+		                                    <div class="progress progress-striped active">
+		                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+		                                            <span class="sr-only">40% Complete (success)</span>
+		                                        </div>
+		                                    </div>
+		                                </div>
+		                            </a>
+		                        </li>
+		                        <li class="divider"></li>
+		                        <li>
+		                            <a href="#">
+		                                <div>
+		                                    <p>
+		                                        <strong>Task 2</strong>
+		                                        <span class="pull-right text-muted">20% Complete</span>
+		                                    </p>
+		                                    <div class="progress progress-striped active">
+		                                        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+		                                            <span class="sr-only">20% Complete</span>
+		                                        </div>
+		                                    </div>
+		                                </div>
+		                            </a>
+		                        </li>
+		                        <li class="divider"></li>
+		                        <li>
+		                            <a href="#">
+		                                <div>
+		                                    <p>
+		                                        <strong>Task 3</strong>
+		                                        <span class="pull-right text-muted">60% Complete</span>
+		                                    </p>
+		                                    <div class="progress progress-striped active">
+		                                        <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+		                                            <span class="sr-only">60% Complete (warning)</span>
+		                                        </div>
+		                                    </div>
+		                                </div>
+		                            </a>
+		                        </li>
+		                        <li class="divider"></li>
+		                        <li>
+		                            <a href="#">
+		                                <div>
+		                                    <p>
+		                                        <strong>Task 4</strong>
+		                                        <span class="pull-right text-muted">80% Complete</span>
+		                                    </p>
+		                                    <div class="progress progress-striped active">
+		                                        <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+		                                            <span class="sr-only">80% Complete (danger)</span>
+		                                        </div>
+		                                    </div>
+		                                </div>
+		                            </a>
+		                        </li>
+		                        <li class="divider"></li>
+		                        <li>
+		                            <a class="text-center" href="#">
+		                                <strong>See All Tasks</strong>
+		                                <i class="fa fa-angle-right"></i>
+		                            </a>
+		                        </li> -->
+		                    </ul>
+		                    <!-- /.dropdown-tasks -->
+		                </li>
+		                
+		                <!-- /.dropdown -->
+		                <li class="dropdown">
+		                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+		                        <i class="fa fa-bell fa-fw"></i> <i class="fa fa-caret-down hidden-xs"></i>
+		                    </a>
+		                    <ul class="dropdown-menu dropdown-alerts">
+	<!--                         <li>
+		                            <a href="#">
+		                                <div>
+		                                    <i class="fa fa-comment fa-fw"></i> New Comment
+		                                    <span class="pull-right text-muted small">4 minutes ago</span>
+		                                </div>
+		                            </a>
+		                        </li>
+		                        <li class="divider"></li>
+		                        <li>
+		                            <a href="#">
+		                                <div>
+		                                    <i class="fa fa-twitter fa-fw"></i> 3 New Followers
+		                                    <span class="pull-right text-muted small">12 minutes ago</span>
+		                                </div>
+		                            </a>
+		                        </li>
+		                        <li class="divider"></li>
+		                        <li>
+		                            <a href="#">
+		                                <div>
+		                                    <i class="fa fa-envelope fa-fw"></i> Message Sent
+		                                    <span class="pull-right text-muted small">4 minutes ago</span>
+		                                </div>
+		                            </a>
+		                        </li>
+		                        <li class="divider"></li>
+		                        <li>
+		                            <a href="#">
+		                                <div>
+		                                    <i class="fa fa-tasks fa-fw"></i> New Task
+		                                    <span class="pull-right text-muted small">4 minutes ago</span>
+		                                </div>
+		                            </a>
+		                        </li>
+		                        <li class="divider"></li>
+		                        <li>
+		                            <a href="#">
+		                                <div>
+		                                    <i class="fa fa-upload fa-fw"></i> Server Rebooted
+		                                    <span class="pull-right text-muted small">4 minutes ago</span>
+		                                </div>
+		                            </a>
+		                        </li>
+		                        <li class="divider"></li>
+		                        <li>
+		                            <a class="text-center" href="#">
+		                                <strong>See All Alerts</strong>
+		                                <i class="fa fa-angle-right"></i>
+		                            </a>
+		                        </li> -->	
+		                    </ul>
+		                    <!-- /.dropdown-alerts -->
+		                </li>
+		                
+		                <!-- /.dropdown -->
+		                <li class="dropdown">
+		                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+		                        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down hidden-xs"></i>
+		                    </a>
+		                    <ul class="dropdown-menu dropdown-user">
+		                        <li><a href="__URL__/index/user/userInfo"><i class="fa fa-user fa-fw"></i> 个人信息</a>
+		                        </li>
+		                        <li class="divider"></li>
+		                        <li><a href="__URL__/index/Login/index"><i class="fa fa-sign-out fa-fw"></i> 登出</a>
+		                        </li>
+		                    </ul>
+		                    <!-- /.dropdown-user -->
+		                </li>
+		                <!-- /.dropdown -->
+		            </ul>
+			
+			<div class="navbar-default menu" role="navigation">
+				<div class="collapse navbar-collapse" style='padding:0;'> <!-- 所有要折叠的内容都要放在navbar-collapse中 -->
+			            <ul class="nav nav-stacked" id='layout_menu'>   <!-- 添加了nav-stacked类的导航条可以实现垂直排列 -->
+				            <li class="sidebar-search">
+	                            <div class="input-group custom-search-form">
+	                                <input type="text" class="form-control" placeholder="课程号">
+	                                <span class="input-group-btn">
+	                                <button class="btn btn-default" type="button">
+	                                    <i class="fa fa-search"></i>
+	                                </button>
+	                            	</span>
+	                            </div>
+	                        </li>
+				        </ul>
+			                <!-- /.sidebar-collapse -->
+			    </div>
+		    </div>
+		</div>
+	</nav>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		function listen_menu_click(){   //这个主要是调整下拉按钮图标的动画效果，即设置按钮被点击时箭头的朝向
+			$('.menu .twolevel .dropdown').click(function(){    //对我的课程中的下拉菜单按钮做一个监听事件
+				if(!$(this).parents('.twolevel').children('ul').hasClass('collapsing')){
+					$(this).parents('.twolevel').children('ul').collapse('toggle');
+					if($(this).parents('.twolevel').hasClass('hasdropdown')){ //当前已展开，下一步的关闭操作
+						$(this).parents('.twolevel').removeClass('hasdropdown');
+						$(this).parents('.twolevel').children('a').children('.glyphicon').addClass('glyphicon-chevron-left');
+						$(this).parents('.twolevel').children('a').children('.glyphicon').removeClass('glyphicon-chevron-down');
+					}else{
+						$(this).parents('.twolevel').addClass('hasdropdown');   //当前未展开，下一步的展开操作
+						$(this).parents('.twolevel').children('a').children('.glyphicon').removeClass('glyphicon-chevron-left');
+						$(this).parents('.twolevel').children('a').children('.glyphicon').addClass('glyphicon-chevron-down');
+					}
+				}
+			});
+			$('.nav .click_jump').click(function(){        //.nav .click_jump是指"我的课程"，"我的作业"，"我的问题"，"我的回答"，"个人信息"这5个span链接。
+				window.location.href = $(this).attr('attr');       //点击这些名字系统跳转到的页面，此处是:__URL__.'/index/index/index'
+			});
+		}
+		
+		function getmenu(){
+			$.ajax({
+				type:'GET',
+				url:'__URL__/index/index/ajax_getmenu',
+				success:function(data){
+					if(data['code'] === 0){
+						var ajaxCon = [];    //创建一个空数组
+						for(var v in data['data']){  //data['data']是一个二维数组，长度是5
+							var t = data['data'][v];
+							var str = '<a><i class="fa '+t['icon']+' fa-fw"></i><span attr="'+t['href']+'" class="click_jump">'+t['name']+'</span>';
+							if(t['two_level']){
+								str = '<li class="twolevel" id="'+t['two_level']+'">'+str+'<span class="glyphicon glyphicon-chevron-left pull-right dropdown"></span></a><ul class="nav nav-second-level aria-expanded collapse"></ul></li>';
+								var ajax_t = {};  //创建一个空对象
+								ajax_t['id'] = t['two_level'];
+								ajax_t['url'] = t['two_level_url'];
+								ajaxCon.push(ajax_t);         //因为只有我的课程这一项有two_level，所以ajaxCon现在是一个一维数组。
+							}else{
+								str = '<li>'+str+'</a></li>';
+							}
+							$('#layout_menu').append(str);  //str是<li>.........</li>
+						}
+						for(var ajaxv in ajaxCon){    //循环只执行一次，因为是一维数组！
+							$.ajax({
+								type:'GET',
+								url:ajaxCon[ajaxv]['url'],    //在后台根据当前登录用户的userID查询此用户的选课！
+								async:false,
+								success:function(data){
+									if(data['code'] === 0){
+										for(var v in data['data']){   //data['data']中是当前用户的所有已选课程
+											str='<li><a href="'+data['data'][v]['url']+'">'+data['data'][v]['name']+'</a></li>';
+											$('#'+ajaxCon[ajaxv]['id']).children('ul').prepend(str);   //prepend是在元素的开头插入内容！在本例中是在第291行的ul中插入的！
+										}
+									}else{
+										console.log(data['errmsg']);
+									}
+								}
+							});
+						}
+						listen_menu_click();   //这个为什么要放在这里？？？？？？？？？是循环执行吗？
+					}else{
+						console.log(data['errmsg']);
+					}
+				}
+			});
+		}
+		getmenu();
+	});
+</script>
+<div id='page-wrapper'>
+	{__CONTENT__}
+</div>
+{include file="/public/footer" /}

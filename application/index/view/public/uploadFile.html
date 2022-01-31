@@ -1,0 +1,122 @@
+	<!-- Modal -->
+		<div class="modal fade" id="upLoadFile" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		        <h4 class="modal-title">上传文件</h4>
+		      </div>
+		      <div class="modal-body">
+				<div class="progress" id="upload_progress" style='display:none;'>
+				  <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+				    <span>0%</span>
+				  </div>
+				</div>
+				<div id='upload_info' style='margin-bottom:10px;text-align:center;'></div> <!-- 这个div用来显示提示信息“请选择文件” -->
+			    <form class='form-inline' enctype="multipart/form-data" method="post">
+				    <div class='form-group'>
+						<input class='pull-left' type="file" id='upload_file' name="file" style='margin-right:10px;' data-placement="top" data-toggle="popover" data-content="请选择文件"/>
+						<input class='pull-left' type="button" id='upload_button' value="上传" /> 
+						<div style='clear:both'></div>
+				    </div>
+				</form> 
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+<script type='text/javascript'>
+		$(document).ready(function(){
+			var modelName = '#upLoadFile ';
+			//动画显示上传过程
+			function upload_progress_show(val){
+				$(modelName+'#upload_progress .progress-bar').css('width',val+'%');
+				$(modelName+'#upload_progress .progress-bar').attr('aria-valuenow',val);
+				$(modelName+'#upload_progress span').html(val+'%');
+			}
+			//文件分段后单段上传的代码
+			function uploadOneShard(file,name,size,shardSize,shardCount,md5,lessionID,i,num){
+				if(num > 3) return false; //最多重传三次
+				//计算每一片的起始与结束位置
+	            var start = i * shardSize,
+	                end = Math.min(size, start + shardSize);    //i是当前是第几段，shardSize是每一段的大小，end取最小值是为了取出正确的最后一段
+				//构造一个表单，FormData是HTML5新增的，这样就可以实现不刷新页面情况下的提交表单，因为这里用到了进度条，所以不能每提交一段文件就刷新页面。
+	            var form = new FormData();
+	            form.append("file", file.slice(start, end));  //slice方法用于切出文件的一部分
+	            form.append("name", name);
+	            form.append("total", shardCount);
+	            form.append("index", i + 1);
+	            form.append("md5", md5);
+	            form.append("lessionID",lessionID)
+	            
+				$.ajax({
+	                url: "__URL__/index/Teacher/ajax_ShareFile",
+	                type: "POST",
+	                data: form,
+	                processData: false,  //很重要，告诉jquery不要对form进行处理
+	                contentType: false,  //很重要，指定为false才能形成正确的Content-Type
+	                success: function (data) {
+	               		if(data['code'] === 0){
+	               			upload_progress_show((data['data']/shardCount*100).toFixed(2)); //toFixed是用来保留小数点后两位
+	               			if(data['data'] == shardCount){
+	               				$(modelName+'#upload_progress').hide();
+	               				$(modelName+'#upload_info').html('上传成功');
+	               				$(modelName+'#upload_file').removeAttr('disabled','disabled');  //让选择文件按钮生效
+								$(modelName+'#upload_button').removeAttr('disabled','disabled');  //让上传按钮生效
+								$(modelName+'#upload_file').val('');   //将已上传的文件抹除
+								upload_progress_show(0);   //将进度条复位
+	               			}
+	               		}else{
+	               			console.log(data['errmsg']);
+	               		}
+	                }
+	            });
+			}
+			
+			function uploadFile(file,lessionID){
+				//在public里面的md5文件夹里的hashme.js里面有this.md5sum这个方法，里面有文件的前0.5M，后0.5M以及中间0.5M计算md5值
+				new hashMe(file, function OutputHash(msg) {  
+					var name = file.name;
+					var size = file.size;
+					var shardSize = 2*1024*1024;    //每块文件的大小不超过2M
+					var shardCount = Math.ceil(size/shardSize);   //文件共分成shardCount块
+					var md5 = msg;
+					
+					$.ajax({
+						type:'POST',
+						url:'__URL__/index/Teacher/ajax_checkFile',
+						data:{'md5':md5,'total':shardCount,'lessionID':lessionID,'filename':name},
+						success:function(data){
+							if(data['code'] === 0){
+								$(modelName+'#upload_progress').show();
+								$(modelName+'#upload_info').html('');
+								$(modelName+'#upload_file').attr('disabled','disabled');  //让选择文件按钮失效
+								$(modelName+'#upload_button').attr('disabled','disabled');  //让上传按钮失效
+								upload_progress_show((data['data']/shardCount*100).toFixed(2));
+								//在for循环里将文件分段并上传！
+								for(i = data['data']; i < shardCount; ++i){
+									uploadOneShard(file,name,size,shardSize,shardCount,md5,lessionID,i,0);
+								}
+							}else if(data['code'] === 1){
+								$(modelName+'#upload_info').html('秒传成功！');
+								$(modelName+'#upload_file').val('');
+								setTimeout(function(){$(modelName+'#upload_info').html('');},3000);
+		               		}else{
+		               			$(modelName+'#upload_info').html(data['errmsg']);
+		               		}
+						}
+					});
+				});
+			}
+			
+			$(modelName+'#upload_button').click(function(){
+				if(!$(modelName+'#upload_file').val()){
+					$(modelName+'#upload_file').popover('show');
+					setTimeout(function(){$(modelName+'#upload_file').popover('destroy');},2000);  //设置定时操作的方法
+					return;
+				}
+				var file = $(modelName+"#upload_file")[0].files[0];
+				uploadFile(file,{$lessionID});
+			});
+		});
+</script>

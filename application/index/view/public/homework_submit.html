@@ -1,0 +1,271 @@
+<!-- 这个页面主要是提供给学生查看老师布置的作业的信息，包括起始时间，截止时间；同时学生可以下载老师布置的作业！ -->
+<!-- Modal -->
+	<div class="modal fade" id="OneHomeworkModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+	        <h4 class="modal-title"></h4><!-- 这个h4标签填入老师布置的作业名 -->
+	      </div>
+	      <div class="modal-body">
+	      <!-- 下面的input标签和p标签初始化时都是隐藏的，有选择性的展示！ -->
+	      	<input id='homeworkID' val='' style='display:none;' />
+	      	<p class="bg-warning text-danger" style='padding:5px 10px;display:none;'></p>  <!--  p标签主要是显示当前不在可提交作业时间这个警告信息！-->
+	      	<form class='form'>
+	      	<!-- 下面这个div是关于作业的要求信息！ -->
+	      		<div class="form-group">
+	      			<p id='homeworkContent' class="text-muted help-block" style='padding:10px 15px;background-color:#f5f5f5'></p>
+	      		</div>
+	      		<div class='row'>
+		      		<div class='col-md-5'>
+			      		<div class="form-group">
+			      			<label for="start_time">开始时间</label>
+			      			<p id='start_time'></p>
+						</div>
+					</div>
+					<div class='col-md-1'></div>
+					<div class='col-md-5'>
+			      		<div class="form-group">
+			      			<label for="end_time">结束时间</label>
+				      		<p id='end_time'></p>
+						</div>
+					</div>
+	      		</div>
+	      		<div class='row'>
+		      		<div class='col-md-5'>
+			      		<div class="form-group">
+			      			<label for="test_case">测试用例</label>
+			      			<p id='test_case'></p>
+			      			{if $usertype !== 'student'}
+			      			<p id='test_case1'></p>
+			      			{/if}
+						</div>
+					</div>
+					<div class='col-md-1'></div>
+					<div class='col-md-5'>
+			      		<div class="form-group">
+			      			<label for="correct_result">正确结果</label>
+				      		<p id='correct_result'>23</p>
+				      		{if $usertype !== 'student'}
+			      			<p id='correct_result1'>123</p>
+			      			{/if}
+						</div>
+					</div>
+	      		</div>
+	      		<div class='row' id='file'>
+	      			<div class='col-xs-12'><label>文件</label></div>
+		      		<div class='col-xs-10'>
+		      			<p id='filename' style='overflow:hidden;text-overflow: ellipsis;white-space:nowrap;'></p>  <!--  这个p标签用来显示老师上传的文件名！-->
+		      		</div>
+		      		<div class='col-xs-2'>
+		      		    <!-- 这里是下载老师布置的作业文件！！！ -->
+		      			<a class='dowload_file' target="_blank" attr='' href='#'><i class='fa fa-download fa-fw pull-right'></i></a>
+		      		</div>
+		      	</div>
+			</form> 
+	      </div>
+	      {if $usertype === 'student'}
+	      <div class="modal-footer">
+	     		<!-- 下面这个p标签是用来显示当前用户已经上传的作业的 -->
+	      		<p id='alreadyUpload' class='pull-left' style='overflow:hidden;text-overflow: ellipsis;white-space:nowrap;'></p><div style='clear:both'></div>
+	      		
+	      		<!-- 上传的进度条 -->
+	      		<div class="progress" id="upload_progress" style='display:none;'>
+				  <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+				    <span>0%</span>
+				  </div>
+				</div>
+
+				<div id='upload_info' style='margin-bottom:10px;text-align:center;'></div>
+			    <div>
+				    <div class='form-group'>
+				    	<!-- 用来显示提示信息的div -->
+						<input class='pull-left' type="file" id='upload_file' name="file" style='margin-right:10px;' data-placement="top" data-toggle="popover" data-content="请选择文件"/>
+						<input class='pull-left' type="button" id='upload_button' value="提交" /> 
+						<div style='clear:both'></div>
+				    </div>
+				</div> 
+	      </div>
+	      {/if}
+	    </div>
+	  </div>
+	</div>
+
+	
+<script type="text/javascript">
+$(document).ready(function(){
+	var modalName = '#OneHomeworkModal ';
+	var homeworkID;
+	var submit = null;
+	
+	function addClickListen(){
+		$(modalName+'.preview_file').click(function(){
+			var filetype = $(this).attr('attr');
+			if(filetype === 'pdf'){
+				var newWin = window.open("","_blank");
+				$.ajax({
+					type:'POST',
+					url:'__URL__/index/ShareFile/ajax_getShareFileAddress',
+					data:{'id':homeworkID,'type':'Homework'},
+					success:function(data){
+						if(data['code'] === 0){
+							data = data['data'];
+							newWin.location.href = "__PUBLIC__/pdf/web/viewer.html?file="+encodeURIComponent("__PUBLIC__/"+data);
+						}else{
+							alert(data['errmsg']);
+						}
+					}
+				});
+			}else if(filetype === 'office'){
+				var newWin = window.open("","_blank");
+				$.ajax({
+					type:'POST',
+					url:'__URL__/index/ShareFile/ajax_getShareFileAddress_office',
+					data:{'id':homeworkID,'type':'Homework'},
+					success:function(data){
+						if(data['code'] === 0){
+							data = data['data'];
+							newWin.location.href = "__PUBLIC__/pdf/web/viewer.html?file="+encodeURIComponent("__PUBLIC__/"+data);
+						}else{
+							alert(data['errmsg']);
+						}
+					}
+				});
+			}
+		});
+	}
+	
+	$(modalName).on('shown.bs.modal', function (e) {
+		homeworkID = $(modalName+'#homeworkID').val();
+		addClickListen();
+		{if $usertype === 'student'}     //如果当前用户是学生，学生可以查看他已提交的作业
+		$.ajax({
+			type:'POST',
+			url:'__URL__/index/homework/ajax_getUserSubmitByHomeworkID',
+			data:{'homeworkID':homeworkID},
+			success:function(data){
+				if(data['code'] === 0){
+					$(modalName+'#alreadyUpload').html(data['data']);
+				}else{
+					console.log(data['errmsg']);
+				}
+			}
+		});
+		{/if}
+	});
+	
+	function upload_progress_show(val){
+		$(modalName+'#upload_progress .progress-bar').css('width',val+'%');
+		$(modalName+'#upload_progress .progress-bar').attr('aria-valuenow',val);
+		$(modalName+'#upload_progress span').html(val+'%');
+	}
+
+	function uploadOneShard(data,file,size,shardSize,shardCount,i,num){
+		if(num > 3) return false; //最多重传三次
+		//计算每一片的起始与结束位置
+        var start = i * shardSize,
+            end = Math.min(size, start + shardSize);
+		//构造一个表单，FormData是HTML5新增的
+        var form = new FormData();
+        form.append("file", file.slice(start, end));  //slice方法用于切出文件的一部分
+        for(var k in data){
+        	form.append(k,data[k]);
+        }
+        form.append("index", i + 1);
+		
+		$.ajax({
+            url: "__URL__/index/homework/ajax_submitHomework_withfile",
+            type: "POST",
+            data: form,
+            processData: false,  //很重要，告诉jquery不要对form进行处理
+            contentType: false,  //很重要，指定为false才能形成正确的Content-Type
+            success: function (data) {
+           		if(data['code'] === 0){
+           			upload_progress_show((data['data']/shardCount*100).toFixed(2));
+           			if(data['data'] == shardCount){
+           				$(modalName+'#upload_progress').hide();
+           				$(modalName+'#upload_file').removeAttr('disabled','disabled');
+						$(modalName+'#upload_button').removeAttr('disabled','disabled');
+						$(modalName+'#upload_file').val('');
+						upload_progress_show(0);
+						$(modalName+'#upload_file').removeAttr('disabled');
+						$(modalName+'#homeworkSubmit').removeAttr('disabled','disabled');
+						setTimeout(function(){
+							alert('提交作业成功！');
+							$(modalName).modal('hide');
+						},200);
+           			}
+           		}else{
+           			console.log(data['errmsg']);
+           		}
+            }
+        });
+	}
+	
+	function uploadFile(file,data){
+		new hashMe(file, function OutputHash(msg) {
+			var name = file.name;
+			var size = file.size;
+			var shardSize = 2*1024*1024;
+			var shardCount = Math.ceil(size/shardSize);
+			var md5 = msg;
+			
+			data['md5'] = md5;
+			data['total'] = shardCount;
+			data['filename'] = name;
+			
+			$.ajax({
+				type:'POST',
+				url:'__URL__/index/homework/ajax_checkFile_homework_submit',
+				data:data,
+				success:function(returndata){
+					if(returndata['code'] === 0){
+						$(modalName+'#upload_progress').show();
+						$(modalName+'#upload_file').attr('disabled','disabled');
+						$(modalName+'#upload_button').attr('disabled','disabled');
+						upload_progress_show((returndata['data']/shardCount*100).toFixed(2));
+						for(i = returndata['data']; i < shardCount; ++i){
+							uploadOneShard(data,file,size,shardSize,shardCount,i,0)
+						}
+					}else if(returndata['code'] === 1){
+						alert(returndata['data']);
+						$(modalName).modal('hide');
+               		}else{
+               			$(modalName+'.text-danger').show();
+               			$(modalName+'.text-danger').html(returndata['errmsg']);
+               		}
+				}
+			});
+		});
+	}
+	
+	$(modalName+'#upload_button').click(function(){
+		$(modalName+'.text-danger').hide();
+		var data = {};
+		
+		var starttime = $(modalName+'#start_time').html();
+		var endtime = $(modalName+'#end_time').html()
+		starttime = Date.parse(new Date(starttime.replace(/-/g, "/")));
+		endtime = Date.parse(new Date(endtime.replace(/-/g, "/")));
+		var nowtime = Date.parse(new Date());
+		if(starttime > nowtime || endtime < nowtime){
+			$(modalName+'.text-danger').show();
+			$(modalName+'.text-danger').html('不在可上传作业的时间区间');
+			return false;
+		}
+		
+		data['homeworkID'] = homeworkID;
+		
+		if(!$(modalName+'#upload_file').val()){
+			$(modalName+'#upload_file').popover('show');
+			setTimeout(function(){$(modalName+'#upload_file').popover('destroy');},2000);
+			return false;
+		}else{
+			var file = $(modalName+"#upload_file")[0].files[0];
+			uploadFile(file,data);
+		}
+	});
+	
+});
+
+</script>
