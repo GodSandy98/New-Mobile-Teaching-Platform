@@ -1,6 +1,32 @@
 # New-Mobile-Teaching-Platform
 The mobile teaching platform is a practical system designed with students submitting homework as an example. The biggest feature of this system is its versatility and simple operability, which is suitable for computer students and teachers to submit and review assignments. With the increase in the number of students, the burden of teachers' homework reviews is getting heavier and heavier. In order to free teachers and students from heavy work and make the work more organized, convenient, and efficient, we have developed this mobile teaching platform.
 
+1. Environment build
+
+1.1 Development framework
+
+We took over the teacher's project, and the original developer used the thinkPHP5.0 framework. When we first took over the project, we tried to use the latest stable version thinkPHP6.0 for development. After communicating with the original developers, we found that the work required to modify the framework was too large. Considering the time factor, we continued to use version 5.0.
+
+1.2 PHP+mysql+Apache
+
+The current configuration of the latest version is PHP7+mysql8+Apache2.4. After configuring the entire environment, it is found that the original code cannot be executed. After communicating with the original developers, it is consistent with their original configuration, and the XAMPP integrated configuration environment is used.
+
+2. Database Design
+
+Since the original system already has a part of the database, we have supplemented and improved it and redesigned it on the basis of the original system. Combined with the needs of system functions, we have added a part of the relationship for the realization of new functions and the optimization of original functions. However, due to incomplete documentation, the understanding of the original database design concept has brought us a lot of trouble. After data verification, function comparison verification, and consultation with the original developers, we have sorted out the original database situation, and we can build on this basis. improve on.
+
+3. Timing and pre-planning
+
+3.1 Timing
+
+During the course setting, we had a lot of time wasted due to improper time planning. This situation brought us a lot of troubles. Through this course setting, we have improved our ability to master time and plan. I believe this ability will be of great help to us. Future development is of great help. On the road to future development, we need more scientific time planning.
+
+3.2 Pre-planning
+
+Most of the problems we encountered were due to the lack of suitable planning and detailed documentation guidance, the original developers were far away from us, and the communication was not convenient. And from the beginning of setting up the environment, we suffered from the lack of documentation guidance. The setting up of an inappropriate environment and the difficulty in understanding the original database made it difficult for us to move forward. In the subsequent development process, we also did not find a suitable development step for a period of time and wasted a lot of time reading code that had nothing to do with our work. After this lesson, we learned how to quickly understand the original project in the real development scenario, and personally experienced the importance of documentation. After we have completed all the functions of the system, we will sort out the relevant written materials and keep them well, so as to leave a good foundation for someone to improve and modify them again in the future. At the same time, we wrote a document to help others quickly get started with this system, which recorded the difficulties we encountered and the solutions, so as to prevent future generations from going through the muddy water we have gone through, and hope that it will be helpful to future system maintainers .
+
+[中文版简介 Intro in Chinese]
+
 1．	环境搭建
 
 1.1 开发框架  
